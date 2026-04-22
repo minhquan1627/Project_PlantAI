@@ -1,0 +1,604 @@
+/* Thừa hưởng các thuộc tính từ AdminManagement nhưng bổ sung chi tiết Modal */
+
+.user-mgmt-container {
+    animation: fadeIn 0.4s ease;
+}
+
+.user-avatar-circle {
+    width: 36px;
+    height: 36px;
+    background: #f0fdf4;
+    color: #90A955;
+    border: 1px solid #dcfce7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-location {
+    font-size: 14px;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Modal Layout */
+.user-detail-modal {
+    background: white;
+    width: 850px; /* Rộng hơn để chia 2 cột */
+    max-height: 90vh;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+.user-modal-grid {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    min-height: 0;  
+    flex: 1;
+    height: 100%;
+}
+
+/* Cột trái */
+.user-info-section {
+    background: #f3f5f7;
+    padding: 30px;
+    border-right: 1px solid #f1f5f9;
+    overflow-y: auto;
+}
+
+.profile-main {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.large-avatar-user {
+    width: 80px;
+    height: 80px;
+    background: white;
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.large-avatar-user img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Phủ kín vòng tròn mà không bị bóp méo hình */
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start; /* Đẩy icon lên ngang hàng với dòng chữ đầu tiên */
+    gap: 10px;
+    font-size: 14px;
+    color: #64748b;
+    text-align: left; /* Ép chữ căn lề trái tuyệt đối */
+    line-height: 1.5;
+}
+
+.info-item svg {
+    flex-shrink: 0; /* Cấm trình duyệt bóp méo icon khi chữ quá dài */
+    margin-top: 3px; /* Quang học: đẩy icon xuống 1 xíu cho cân đối với chữ */
+}
+
+.user-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-box {
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid #f1f5f9;
+}
+
+.stat-box strong {
+    display: block;
+    font-size: 18px;
+    color: #1e293b;
+    margin-top: 5px;
+}
+
+/* Cột phải */
+.user-history-section {
+    padding: 0 25px 20px 25px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.user-history-section h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 20px;
+    font-size: 16px;
+    color: #1e293b;
+}
+
+.activity-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.act-item {
+    display: flex;
+    gap: 15px;
+}
+
+.act-icon {
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.act-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #334155;
+    font-weight: 500;
+}
+
+.act-info small {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+/* Giao diện Tab */
+.history-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.tab-btn.active {
+    background: rgba(144, 169, 85, 0.1);
+    color: #90A955;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #f8fafc;
+}
+
+/* Từng dòng lịch sử */
+.history-item-row {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    margin-bottom: 10px;
+    gap: 15px;
+    transition: 0.2s;
+}
+
+.history-item-row:hover {
+    background: #fcfdfc;
+    border-color: #90A955;
+}
+
+.scan-thumb {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.item-info {
+    flex: 1;
+    padding-right: 15px; 
+}
+
+.item-info p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word; 
+    line-height: 1.5;
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-align: left; 
+}
+
+.item-info span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.item-meta {
+    font-size: 11px;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* Trạng thái bài viết */
+.post-status.ok { color: #7CBA3F; }
+.post-status.wait { color: #f59e0b; }
+
+.btn-view-small {
+    background: #f1f5f9;
+    border: none;
+    padding: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+/* Container mới chứa cả Tab và nút X */
+.tabs-header-row {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px 0 10px 0; 
+    border-bottom: 2px solid #f1f5f9;
+    margin-bottom: 15px;
+    background: white; 
+}
+
+.tab-content {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 350px; /* Điều chỉnh tùy theo độ cao màn hình */
+    padding-right: 5px;
+}
+
+/* Chỉnh lại history-tabs để không bị đè border */
+.history-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: none !important; /* Xóa border cũ của tabs */
+    margin-bottom: 0 !important;
+}
+
+/* Style cho nút X mới */
+.close-btn-inline {
+    background: #f8fafc;
+    border: none;
+    padding: 8px;
+    border-radius: 12px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn-inline:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+
+
+.tab-content::-webkit-scrollbar {
+    width: 5px;
+}
+.tab-content::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+/* Label trạng thái bên cột trái */
+.status-tag {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+.status-tag.active { background: #ecfdf5; color: #10b981; }
+.status-tag.locked { background: #fef2f2; color: #ef4444; }
+
+
+/* Comment */
+.comments-drilldown {
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+    text-align: left; /* Ép toàn bộ về bên trái */
+}
+
+.drilldown-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.post-title-context {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-back:hover {
+    background: #e2e8f0;
+}
+
+/* Danh sách bình luận dạng Bubbles */
+.comments-list-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.comment-bubble {
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px; /* Tạo hình dạng bong bóng chat */
+    position: relative;
+    border: 1px solid #f1f5f9;
+}
+
+.cmt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.cmt-header strong {
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.cmt-header small {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.comment-bubble p {
+    font-size: 13.5px;
+    color: #475569;
+    line-height: 1.5;
+    margin: 0;
+    text-align: left; /* Đảm bảo nội dung không bị căn giữa */
+}
+
+/* Nút xóa comment nằm gọn bên phải */
+.btn-delete-cmt {
+    margin-top: 8px;
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+}
+
+.btn-delete-cmt:hover {
+    color: #ef4444;
+}
+
+/* --- PHẦN XỬ LÝ DANH SÁCH BÀI ĐĂNG (IMAGE 2) --- */
+.history-item-row.post-item {
+    align-items: flex-start; 
+    padding: 15px;
+}
+
+.post-item-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    gap: 15px;
+}
+
+.item-content-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0; /* Tuyệt chiêu số 1: Ép Flexbox cho phép cắt chữ bên trong */
+    gap: 15px;
+}
+
+.post-text-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 6px;
+    flex: 1; 
+    min-width: 0; 
+}
+
+.post-preview-text {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: left; 
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word; 
+}
+
+.post-stats-inline {
+    font-size: 13px;
+    color: #94a3b8;
+    white-space: nowrap;    
+    flex-shrink: 0; /* Tuyệt đối không cho chữ này bị bóp méo hay thu nhỏ */
+}
+
+.post-stats-sub {
+    font-size: 13px;
+    color: #94a3b8;
+    text-align: left; 
+}
+
+.item-meta-inline {
+    font-size: 13px;
+    color: #94a3b8;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 90px; 
+}
+
+.item-actions {
+    flex-shrink: 0; 
+}
+
+.original-post-content {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.post-author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.author-avatar-tiny {
+    width: 32px;
+    height: 32px;
+    background: #90A955;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.author-details strong {
+    display: block;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.author-details span {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.full-post-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #334155;
+    margin-bottom: 15px;
+    white-space: pre-wrap; /* Quan trọng: Giữ lại các dấu xuống dòng của người dùng */
+}
+
+.full-post-stats {
+    display: flex;
+    gap: 15px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.btn-view-comment {
+    background: rgba(144, 169, 85, 0.1);
+    color: #90A955;
+    border: 1px solid rgba(144, 169, 85, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-view-comment:hover {
+    background: #90A955;
+    color: white;
+}
+
+.mgmt-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}

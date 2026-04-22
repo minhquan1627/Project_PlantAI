@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PlantAI</string>
+
+    <string name="facebook_app_id">1586194789383282</string> 
+    
+    <string name="facebook_client_token">bcf32261c42aaaa3a722b13811d261c9</string>
+
+    <string name="fb_login_protocol_scheme">fb1586194789383282</string> 
+</resources>

@@ -1,0 +1,19 @@
+# --- Flask Backend Core ---
+Flask==3.0.3
+flask-cors==4.0.1
+
+# --- Deep Learning & AI (Cho Pipeline 3 lớp của ông) ---
+# Lưu ý: Chọn phiên bản phù hợp với con Nitro 5 và bản Python ông vừa cài
+numpy==1.26.4
+opencv-python==4.9.0.80
+pillow==10.3.0
+
+# --- Server Deployment ---
+gunicorn==22.0.0  # Để chạy trên Linux/Production
+requests==2.31.0
+
+dotenv==0.9.9
+pymongo
+mongoengine
+motor
+Flask-Mail

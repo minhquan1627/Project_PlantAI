@@ -1,0 +1,514 @@
+/* ================= VIEW 1: DANH SÁCH ================= */
+.disease-mgmt-container {
+    animation: fadeIn 0.4s ease;
+}
+
+.btn-add-primary {
+    background: #90A955;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add-primary:hover { background: #7A9342; }
+
+.disease-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.disease-thumb-sm {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+
+.disease-name {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 15px;
+}
+
+.plant-badge {
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.disease-sci-name {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.disease-meta-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.row-dimmed {
+    opacity: 0.6;
+    background: #f8fafc;
+}
+
+.icon-btn.toggle-eye { color: #64748b; }
+.icon-btn.toggle-eye:hover { color: #3b82f6; background: #eff6ff; }
+
+/* ================= VIEW 2: EDITOR (PREMIUM SAAS STYLE) ================= */
+.disease-editor-container {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc; /* Nền tổng thể xám cực nhẹ */
+}
+
+/* --- HEADER --- */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    z-index: 10;
+}
+
+.editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-back-editor {
+    background: #f1f5f9;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-back-editor:hover { 
+    background: #e2e8f0; 
+    transform: translateX(-2px);
+    color: #0f172a;
+}
+
+.editor-header-left h3 { margin: 0 0 2px 0; font-size: 17px; font-weight: 700; color: #0f172a; }
+.editor-header-left span { color: #64748b; font-size: 13px; font-weight: 500; }
+
+.btn-save-primary {
+    background: linear-gradient(135deg, #90A955 0%, #738940 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(144, 169, 85, 0.25);
+}
+
+.btn-save-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(144, 169, 85, 0.35);
+}
+
+/* --- BỐ CỤC 2 CỘT --- */
+.editor-layout-grid {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* --- CỘT TRÁI (METADATA) --- */
+.editor-sidebar {
+    width: 340px;
+    background: white;
+    border-right: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 32px 24px;
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02); /* Đổ bóng nhẹ sang phải */
+    z-index: 5;
+}
+
+.form-group { margin-bottom: 24px; }
+.form-group label { 
+    display: block; 
+    font-size: 13px; 
+    font-weight: 600; 
+    color: #334155; 
+    margin-bottom: 8px; 
+}
+
+/* Hiệu ứng Focus siêu mượt (Tactile feel) */
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid transparent; /* Giấu viền mặc định */
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.form-input::placeholder { color: #94a3b8; font-weight: 400; }
+
+.form-input:hover { background: #f1f5f9; }
+
+.form-input:focus { 
+    background: white;
+    border-color: #90A955; 
+    box-shadow: 0 0 0 4px rgba(144, 169, 85, 0.15); /* Vòng sáng xanh */
+}
+
+.italic-input { font-style: italic; }
+
+.image-upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.image-upload-box:hover {
+    background: #f1f6ea; /* Nền xanh nhạt */
+    border-color: #90A955;
+    color: #90A955;
+}
+
+.image-upload-box p { margin-top: 12px; font-size: 13px; font-weight: 500; color: inherit; }
+
+/* --- CỘT PHẢI (WORKSPACE) --- */
+.editor-main-workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 40px;
+    overflow-y: auto;
+}
+
+/* Tabs kiểu iOS Segmented Control */
+.editor-content-tabs {
+    display: inline-flex;
+    background: #e2e8f0;
+    padding: 6px;
+    border-radius: 12px;
+    gap: 4px;
+    margin-bottom: 24px;
+    align-self: flex-start; /* Không kéo dài toàn bộ chiều ngang */
+}
+
+.content-tab {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-tab:hover:not(.active) { color: #1e293b; }
+
+.content-tab.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Nổi bật tab đang chọn */
+}
+
+/* Vùng Editor mang phong cách Notion */
+.word-editor-wrapper {
+    background: white;
+    border-radius: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); /* Đổ bóng cực mềm */
+    overflow: hidden;
+}
+
+.word-toolbar {
+    background: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.toolbar-group { display: flex; gap: 4px; }
+.toolbar-divider { width: 1px; height: 20px; background: #e2e8f0; }
+
+.toolbar-select {
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    outline: none;
+    background: #f8fafc;
+    font-weight: 500;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.toolbar-select:hover { background: #f1f5f9; }
+
+.toolbar-btn {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.toolbar-btn:hover { background: #f1f5f9; color: #90A955; } /* Đổi màu xanh khi hover tool */
+
+/* Trang giấy (Canvas) */
+.word-canvas {
+    flex: 1;
+    padding: 0; /* Xóa khoảng trống thừa */
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    background: white;
+}
+
+.rich-text-area {
+    width: 100%;
+    max-width: 850px;
+    background: transparent;
+    border: none;
+    padding: 40px 60px; /* Thụt lề sâu tạo cảm giác trang giấy thật */
+    resize: none;
+    outline: none;
+    font-size: 16px; /* Chữ to hơn, dễ đọc hơn */
+    line-height: 1.7;
+    color: #1e293b;
+    font-family: inherit; /* Kế thừa font hệ thống đẹp hơn */
+    min-height: 600px;
+}
+
+.rich-text-area::placeholder {
+    color: #cbd5e1;
+    font-weight: 400;
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+
+/* ==== Dropdown ==== */
+.custom-premium-select {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.select-trigger {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.select-trigger.open {
+    background: white;
+    border-color: #90A955;
+    box-shadow: 0 0 0 4px rgba(144, 169, 85, 0.15);
+}
+
+.select-trigger:hover:not(.open) { background: #f1f5f9; }
+
+.select-trigger .placeholder { color: #94a3b8; font-weight: 400; }
+.select-trigger .has-value { color: #0f172a; }
+
+.chevron-icon { color: #64748b; transition: transform 0.3s ease; }
+.select-trigger.open .chevron-icon { transform: rotate(180deg); color: #90A955; }
+
+/* Menu xổ xuống (Floating Menu) */
+.select-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 6px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Các lựa chọn bên trong */
+.select-option {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.15s ease;
+}
+
+.select-option:hover { background: #f1f5f9; color: #0f172a; }
+
+.select-option.selected {
+    background: rgba(144, 169, 85, 0.1);
+    color: #738940;
+    font-weight: 600;
+}
+
+.check-icon { font-weight: bold; color: #90A955; }
+
+/* Animation mở menu */
+@keyframes dropdownPop {
+    from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= TOOLBAR ================= */
+.custom-toolbar-select {
+    position: relative;
+    min-width: 100px;
+}
+
+.select-trigger-mini {
+    padding: 6px 12px;
+    background: #f8fafc;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-trigger-mini:hover { background: #e2e8f0; }
+.select-trigger-mini .chevron { transition: 0.3s; color: #64748b; }
+.select-trigger-mini .chevron.open { transform: rotate(180deg); color: #90A955; }
+
+.select-dropdown-menu-mini {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.select-option-mini {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #334155;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+.select-option-mini:hover { background: #f1f5f9; color: #0f172a; }
+
+/* Placeholder cho div contentEditable */
+.rich-text-area:empty:before {
+    content: attr(placeholder);
+    color: #cbd5e1;
+    display: block;
+}
+
+.rich-text-area:focus {
+    outline: none;
+}
+
+/* Cho phép ảnh chèn vào editor tự động co giãn */
+.rich-text-area img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+/* Trạng thái Nút đang được bật (Active Tool) */
+.toolbar-btn.active {
+    background: #f1f6ea; /* Nền xanh lục siêu nhạt */
+    color: #90A955;      /* Icon đổi màu xanh */
+    box-shadow: inset 0 0 0 1px rgba(144, 169, 85, 0.2);
+}
+
+/* Hiệu ứng kéo thả ảnh bìa */
+.image-upload-box.dragging {
+    background: #f1f6ea;
+    border-color: #90A955;
+    transform: scale(1.02);
+}
+
+.thumbnail-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo ảnh tự cắt cho vừa khung, không bị méo */
+    border-radius: 12px;
+}

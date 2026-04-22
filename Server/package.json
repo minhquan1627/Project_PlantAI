@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Hệ thống quản trị Plant AI",
+  "main": "app.py",
+  "scripts": {
+    "install-all": "npm install && cd ../admin-plantai && npm install",
+    "build": "cd ../admin-plantai && npm run build",
+    "start": "python app.py",
+    "dev-all": "npm run start & (cd ../admin-plantai && npm run dev)"
+  },
+  "author": "Quan - PlantAI Developer",
+  "license": "ISC"
+}

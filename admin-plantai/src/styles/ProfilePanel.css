@@ -1,0 +1,306 @@
+/* Container chính - Hiệu ứng xuất hiện mượt mà */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 10px;
+    animation: slideUp 0.4s ease-out;
+}
+
+/* 1. Header Card - Khu vực Avatar & Tên */
+.profile-header-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.avatar-section {
+    position: relative;
+}
+
+.large-avatar {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #90A955, #4F772D);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    box-shadow: 0 8px 15px rgba(144, 169, 85, 0.3);
+}
+
+.btn-upload {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-upload:hover {
+    background: #f1f5f9;
+    transform: scale(1.1);
+}
+
+.user-basic-info h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #1e293b;
+}
+
+.role-badge {
+    display: inline-block;
+    background: rgba(144, 169, 85, 0.1);
+    color: #90A955;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* 2. Grid layout cho các nhóm tính năng */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+}
+
+.info-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    color: #334155;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+/* 3. Form & Input styling */
+.field-group {
+    margin-bottom: 18px;
+}
+
+.field-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.field-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.field-group input:focus {
+    outline: none;
+    border-color: #90A955;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(144, 169, 85, 0.1);
+}
+
+/* Input khi ở chế độ xem (Disabled) */
+.field-group input:disabled {
+    background: transparent;
+    border-color: transparent;
+    padding-left: 0;
+    font-weight: 500;
+    color: #1e293b;
+    cursor: default;
+}
+
+.field-group small {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* 4. Group Buttons */
+.edit-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit, .btn-save, .btn-save-sm {
+    background: #90A955;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-edit:hover, .btn-save:hover {
+    background: #7a8f48;
+    box-shadow: 0 4px 12px rgba(144, 169, 85, 0.3);
+}
+
+.btn-cancel, .btn-cancel-sm {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    border-color: #90A955;
+    color: #90A955;
+    background: rgba(144, 169, 85, 0.05);
+}
+
+/* 5. Danger Zone */
+.danger-zone {
+    border: 1.5px solid #fee2e2;
+    background: #fffafa;
+}
+
+.danger-zone p {
+    font-size: 13px;
+    color: #991b1b;
+    margin-bottom: 20px;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-header-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Khoảng cách giữa các cụm input */
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Ép các ô input chiếm 100% chiều rộng của Card */
+.password-form .field-group input {
+    width: 100%;
+    box-sizing: border-box; /* Quan trọng: để padding không làm tràn input */
+    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+    padding: 12px 15px;
+    border-radius: 10px;
+}
+
+/* Focus vào thì đổi màu xanh thương hiệu của bạn */
+.password-form .field-group input:focus {
+    border-color: #90A955;
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(144, 169, 85, 0.1);
+}
+
+/* Căn chỉnh lại cụm nút bấm bên dưới */
+.password-form .edit-group {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+}
+
+.btn-save-sm {
+    flex: 2; /* Nút cập nhật to hơn */
+    background: #90A955;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cancel-sm {
+    flex: 1; /* Nút hủy nhỏ hơn */
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+}

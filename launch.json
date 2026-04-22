@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Backend (Dart Frog)",
+            "request": "launch",
+            "type": "dart",
+            "program": "packages/plant_ai_api/main.dart", // Đường dẫn đến file main của Server
+            "cwd": "packages/plant_ai_api", // Thư mục làm việc của Server
+            "args": ["--port=8080"] // Cổng chạy server
+        },
+        {
+            "name": "Frontend (PlantAI App)",
+            "request": "launch",
+            "type": "flutter",
+            "program": "packages/plant_ai_client/lib/main.dart", // Đường dẫn file main Flutter
+            "cwd": "packages/plant_ai_client",
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Chạy Tất Cả (Fullstack)",
+            "configurations": ["Backend (Dart Frog)", "Frontend (PlantAI App)"]
+        }
+    ]
+}

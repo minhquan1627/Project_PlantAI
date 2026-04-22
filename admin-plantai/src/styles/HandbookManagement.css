@@ -1,0 +1,257 @@
+/* ================= VIEW 1: DANH SÁCH ================= */
+.handbook-mgmt-container {
+    animation: fadeIn 0.4s ease;
+}
+
+/* Lọc & Tìm kiếm nằm cùng hàng */
+.mgmt-filters-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.handbook-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.handbook-thumb-sm {
+    width: 70px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+}
+
+.handbook-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 14px;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.handbook-stats {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Nút Ghim (Pin) */
+.pin-btn {
+    background: transparent;
+    transition: 0.2s;
+}
+.pin-btn:hover { background: #fffbeb; }
+.pin-btn.pinned { background: #fef3c7; }
+
+/* Tag Chủ đề giống trên App */
+.category-tag {
+    background: #f0fdf4;
+    color: #90A955;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ================= VIEW 2: EDITOR (WORD-LIKE) ================= */
+.handbook-editor-container {
+    animation: slideInRight 0.3s ease;
+    height: calc(100vh - 100px); 
+    display: flex;
+    flex-direction: column;
+}
+
+.title-input {
+    font-size: 16px;
+    font-weight: 700;
+    resize: none;
+}
+
+/* Tinh chỉnh nút chèn Mẹo PlantAI trên Toolbar */
+.toolbar-btn.tip-btn {
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+}
+.toolbar-btn.tip-btn:hover {
+    background: #dcfce7;
+}
+
+/* Các class dùng chung từ cấu trúc Editor (Giữ nguyên như DiseaseManagement) */
+.editor-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; padding: 20px; 
+    background: white; border-bottom: 1px solid #e2e8f0; 
+    border-radius: 16px 16px 0 0; 
+}
+.editor-header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; }
+.btn-back-editor { background: #f1f5f9; 
+    border: none; 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 10px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #475569; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+.btn-back-editor:hover { 
+    background: #e2e8f0; 
+}
+.editor-header-left h3 { 
+    margin: 0 0 4px 0; 
+    font-size: 18px; 
+    color: #1e293b; 
+}
+.editor-header-left span { 
+    color: #94a3b8; 
+    font-size: 13px; 
+}
+.btn-save-primary { 
+    background: #10b981; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 10px; 
+    font-weight: 600; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    cursor: pointer; 
+}
+.editor-layout-grid { 
+    display: flex; 
+    flex: 1; 
+    background: #f8fafc; 
+    overflow: hidden; 
+}
+.editor-sidebar { 
+    width: 320px; 
+    background: white; 
+    border-right: 1px solid #e2e8f0; 
+    padding: 25px; 
+    overflow-y: auto; 
+}
+.form-group { 
+    margin-bottom: 20px; 
+}
+.form-group label { 
+    display: block; 
+    font-size: 13px; 
+    font-weight: 600; 
+    color: #475569; 
+    margin-bottom: 8px; 
+}
+.form-input { 
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid #cbd5e1; 
+    border-radius: 8px; 
+    font-size: 14px; 
+    color: #1e293b; 
+    outline: none; 
+    font-family: inherit; 
+}
+.form-input:focus { 
+    border-color: #90A955; 
+}
+.image-upload-box { 
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px; height: 120px; 
+    display: flex; flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    background: #f8fafc; 
+    cursor: pointer; 
+}
+.image-upload-box p { 
+    margin-top: 10px; 
+    font-size: 12px; 
+    color: #64748b; 
+}
+.editor-main-workspace { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px; 
+    overflow-y: auto; 
+}
+.word-editor-wrapper { 
+    background: #e2e8f0; 
+    border-radius: 12px; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    border: 1px solid #cbd5e1; 
+    overflow: hidden; 
+}
+.word-toolbar { 
+    background: white; 
+    padding: 10px 15px; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    border-bottom: 1px solid #cbd5e1; 
+}
+.toolbar-group {
+     display: flex; 
+     gap: 5px; 
+    }
+.toolbar-divider { 
+    width: 1px; 
+    height: 24px; 
+    background: #cbd5e1; 
+}
+.toolbar-select { 
+    padding: 6px; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 4px; 
+    outline: none; 
+    background: #f8fafc; 
+}
+.toolbar-btn { 
+    background: transparent; 
+    border: none; width: 30px; 
+    height: 30px; display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border-radius: 6px; 
+    color: #475569; 
+    cursor: pointer; 
+}
+.toolbar-btn:hover { 
+    background: #f1f5f9; 
+    color: #1e293b; 
+}
+.word-canvas { 
+    flex: 1; 
+    padding: 30px; 
+    display: flex; 
+    justify-content: center; 
+    overflow-y: auto; 
+}
+.rich-text-area { 
+    width: 100%; 
+    max-width: 800px; 
+    background: white; 
+    border: none; 
+    padding: 40px; 
+    border-radius: 4px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+    resize: none; 
+    outline: none; 
+    font-size: 16px; 
+    line-height: 1.6; 
+    color: #1e293b;
+    min-height: 600px; 
+}

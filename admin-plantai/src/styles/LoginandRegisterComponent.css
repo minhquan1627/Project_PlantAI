@@ -1,0 +1,293 @@
+/* =========================================================
+   LoginandRegisterComponent.css - ĐỈNH CAO UI/UX (PREMIUM SAAS)
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root {
+    --primary: #90A955;
+    --primary-dark: #5c6e31; 
+    --primary-glow: rgba(144, 169, 85, 0.4);
+    --bg-input: #f4f7f6; /* Đổi màu nền input sang tone xám xanh cực nhạt */
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mac-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../assets/BackGroundLogin.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.2px;
+}
+
+/* Lớp phủ màn hình tối ưu độ sâu */
+.mac-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0.7) 100%);
+    backdrop-filter: blur(4px); /* Làm mờ nhẹ background để tập trung vào Form */
+    z-index: 0;
+}
+
+/* KHUNG KÍNH PHA LÊ (PREMIUM GLASSMORPHISM) */
+.mac-window {
+    width: 960px; /* Mở rộng thêm một chút cho tỷ lệ vàng */
+    min-height: 600px;
+    background: rgba(255, 255, 255, 0.85); /* Nền trắng ngọc trai */
+    backdrop-filter: blur(24px) saturate(150%); /* Bí quyết của Apple: Tăng bão hòa màu bên dưới lớp kính */
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border-radius: 28px; 
+    display: flex; 
+    overflow: hidden; 
+    position: relative; 
+    z-index: 1;
+    
+    /* 3 lớp bóng đổ tạo độ sâu tuyệt đối */
+    box-shadow: 
+        0 40px 80px -20px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.4) inset, /* Viền sáng bên trong */
+        0 20px 30px rgba(144, 169, 85, 0.1); /* Hắt sáng xanh nhẹ xuống dưới */
+}
+
+/* ================= CỘT TRÁI: BRANDING  ================= */
+.side-brand {
+    flex: 4.5;
+    /* Dùng gradient bán trong suốt để lộ ảnh nền ruộng bậc thang phía sau */
+    background: linear-gradient(135deg, rgba(144, 169, 85, 0.65) 0%, rgba(61, 74, 34, 0.85) 100%);
+    backdrop-filter: blur(12px); /* Hiệu ứng kính mờ */
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255, 255, 255, 0.15); /* Cạnh viền hắt sáng */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hiệu ứng ánh sáng hữu cơ (Organic Glow) ẩn dưới logo */
+.side-brand::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    filter: blur(15px);
+    pointer-events: none;
+}
+
+.side-brand img {
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+    transition: var(--transition-bounce);
+    z-index: 2;
+}
+
+.side-brand img:hover {
+    transform: translateY(-8px) scale(1.05);
+}
+
+.side-brand h1 { 
+    font-size: 3rem; 
+    font-weight: 800; 
+    margin: 20px 0 10px 0; 
+    letter-spacing: -1px;
+    z-index: 2;
+    color: #ffffff; 
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.side-brand p { 
+    color: rgba(255, 255, 255, 0.9); 
+    font-size: 1rem; 
+    font-weight: 500;
+    line-height: 1.6;
+    z-index: 2;
+}
+
+/* ================= CỘT PHẢI: FORM CHUẨN UX ================= */
+.side-form {
+    flex: 5.5;
+    padding: 60px 80px; /* Tăng padding để form có không gian thở */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0.9));
+}
+
+.form-header h2 { 
+    font-size: 2.2rem; 
+    margin-bottom: 8px; 
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.form-header p { 
+    color: #64748b; 
+    font-size: 1rem; 
+    font-weight: 500;
+    margin-bottom: 35px; 
+}
+
+/* Ô Input: Hiệu ứng nổi bồng bềnh */
+.input-group { margin-bottom: 20px; position: relative; }
+
+.input-group input {
+    width: 100%;
+    padding: 16px 15px 16px 50px; /* To hơn, dễ bấm hơn */
+    border-radius: 14px;
+    border: 2px solid transparent; /* Giấu viền mặc định */
+    background: var(--bg-input);
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    transition: var(--transition-smooth);
+    box-sizing: border-box;
+}
+
+.input-group input::placeholder { color: #94a3b8; font-weight: 400; }
+
+.input-icon { 
+    position: absolute; 
+    left: 18px; 
+    top: 50%; 
+    transform: translateY(-50%);
+    color: #94a3b8; 
+    transition: var(--transition-smooth);
+}
+
+/* Vi tương tác (Micro-interaction) khi Focus */
+.input-group input:focus { 
+    background: #ffffff;
+    border-color: var(--primary); 
+    box-shadow: 0 10px 20px var(--primary-glow), 0 0 0 4px rgba(144, 169, 85, 0.1); 
+    transform: translateY(-2px); /* Ô input tự động nảy lên nhẹ */
+}
+
+/* Đổi màu icon khi input đang được focus */
+.input-group input:focus + .input-icon,
+.input-group input:not(:placeholder-shown) + .input-icon {
+    color: var(--primary);
+}
+
+/* NÚT BẤM CHÍNH (MAGNETIC BUTTON) */
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #a4c05f 0%, #7d9447 100%); 
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    margin-top: 15px;
+    box-shadow: 0 10px 20px rgba(144, 169, 85, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hiệu ứng quét sáng lướt qua nút */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    transition: all 0.5s ease;
+}
+
+.btn-primary:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 15px 25px rgba(144, 169, 85, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3); 
+    background: linear-gradient(135deg, #b0cd65 0%, #87a04c 100%); /* Sáng lên khi hover */
+}
+
+.btn-primary:hover::after {
+    left: 150%; /* Chạy tia sáng */
+}
+
+.btn-primary:active {
+    transform: translateY(1px) scale(0.98); /* Hiệu ứng lún nút vật lý */
+}
+
+.btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ================= OTP CHUẨN QUỐC TẾ ================= */
+.otp-container { 
+    display: flex; 
+    gap: 12px; 
+    justify-content: center; 
+    margin-bottom: 30px; 
+}
+
+.otp-input { 
+    width: 50px; 
+    height: 60px; 
+    text-align: center; 
+    font-size: 1.8rem; 
+    font-weight: 800; 
+    color: var(--primary-dark);
+    border: 2px solid #e2e8f0; 
+    border-radius: 12px; 
+    background: #f8fafc;
+    transition: var(--transition-smooth);
+}
+
+.otp-input:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    outline: none;
+    box-shadow: 0 10px 20px var(--primary-glow);
+    transform: translateY(-4px);
+}
+
+/* ALERT LÀM LẠI CHO SANG TRỌNG HƠN */
+.alert {
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

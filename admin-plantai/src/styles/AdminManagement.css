@@ -1,0 +1,458 @@
+.admin-mgmt-container {
+    animation: fadeIn 0.4s ease;
+}
+
+.mgmt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.mgmt-title h2 {
+    font-size: 22px;
+    color: #1e293b;
+    margin: 0;
+}
+
+.mgmt-title span {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.btn-add-admin {
+    background: #90A955;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add-admin:hover {
+    background: #7a8f48;
+    box-shadow: 0 4px 12px rgba(144, 169, 85, 0.2);
+}
+
+/* Filters */
+.mgmt-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-box-inner {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box-inner svg {
+    position: absolute;
+    left: 12px;
+    color: #94a3b8;
+}
+
+.search-box-inner input {
+    width: 100%;
+    padding: 10px 10px 10px 35px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #64748b;
+    outline: none;
+}
+
+/* Table Styling */
+.admin-table-wrapper {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid #f1f5f9;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-table th {
+    background: #f8fafc;
+    padding: 15px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.admin-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-avatar-sm {
+    width: 36px;
+    height: 36px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #475569;
+}
+
+.admin-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.admin-email {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-badge.active { background: #ecfdf5; color: #10b981; }
+.status-badge.pending { background: #fffbeb; color: #f59e0b; }
+.status-badge.locked { background: #fef2f2; color: #ef4444; }
+
+/* Actions */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.icon-btn:hover { background: #e2e8f0; color: #1e293b; }
+.icon-btn.delete:hover { background: #fee2e2; color: #ef4444; }
+.icon-btn.approve:hover { background: #d1fae5; color: #10b981; }
+
+.row-locked td {
+    opacity: 0.6;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.6); /* Màu nền tối mờ */
+    backdrop-filter: blur(4px); /* Làm mờ hậu cảnh */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.history-modal {
+    background: white;
+    width: 500px;
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-text h3 { margin: 0; font-size: 18px; color: #1e293b; }
+.header-text p { margin: 5px 0 0; font-size: 13px; color: #64748b; }
+
+.close-btn {
+    background: #f8fafc;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #64748b;
+}
+
+/* Timeline Style */
+.modal-body {
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.timeline-container {
+    border-left: 2px solid #e2e8f0;
+    margin-left: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -32px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    background: #90A955; /* Màu thương hiệu PlantAI của Quân */
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #90A955;
+}
+
+.log-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-type {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.log-target {
+    font-size: 13px;
+    color: #90A955;
+    background: rgba(144, 169, 85, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.log-time {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+.btn-secondary-full {
+    width: 100%;
+    padding: 12px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    margin: 0 25px 20px;
+    width: calc(100% - 50px);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+.mgmt-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Container Search */
+.search-wrapper { position: relative; }
+
+.search-box-modern {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    gap: 12px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    width: 280px;
+}
+
+.search-box-modern input {
+    border: none;           /* Xóa bỏ cái viền đen mặc định */
+    outline: none;          /* Xóa bỏ cái khung xanh/đen khi nhấn vào */
+    background: transparent;/* Để nó hòa mình vào nền trắng của thẻ cha */
+    width: 100%;            /* Chiếm trọn không gian còn lại */
+    font-size: 14px;        /* Chỉnh lại font cho vừa mắt */
+    color: #1e293b;         /* Màu chữ tối cho dễ đọc */
+    padding: 0;             /* Bỏ padding vì thẻ cha .search-box-modern đã có padding rồi */
+}
+
+/* Thêm cái này cho nó "ngầu" hơn khi gõ */
+.search-box-modern input::placeholder {
+    color: #94a3b8;         /* Màu chữ gợi ý mờ đi một chút */
+    font-size: 14px;
+}
+
+.search-box-modern:focus-within {
+    border-color: #90A955;
+    box-shadow: 0 4px 12px rgba(144, 169, 85, 0.15);
+}
+
+/* Gợi ý search */
+.search-suggestions {
+    position: absolute;
+    top: 50px; left: 0; right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 100;
+    padding: 8px 0;
+    list-style: none;
+    border: 1px solid #f1f5f9;
+}
+
+.search-suggestions li {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.search-suggestions li:hover { background: #f8fafc; color: #90A955; }
+
+/* Custom Filter Dropdown */
+.custom-filter { position: relative; }
+
+.filter-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #475569;
+    min-width: 200px;
+}
+
+.filter-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.filter-dropdown {
+    position: absolute;
+    top: 50px; right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 100;
+    padding: 8px;
+    min-width: 200px;
+    list-style: none;
+}
+
+.filter-dropdown li {
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.filter-dropdown li:hover { background: #f1f5f9; }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.check-icon { position: absolute; right: 12px; color: #90A955; }
+
+.rotate { transform: rotate(180deg); transition: 0.3s; }
+
+.sugg-info {
+    display: flex;
+    flex-direction: column; /* 👈 Ép tên lên trên, email xuống dưới */
+    align-items: flex-start;
+    gap: 2px; /* Khoảng cách nhỏ giữa tên và email */
+    line-height: 1.2;
+}
+
+.sugg-name {
+    font-weight: 700; /* Cho tên đậm lên hẳn */
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.sugg-email {
+    font-size: 12px;
+    color: #64748b; /* Màu xám nhạt hơn để làm nền */
+    font-weight: 400;
+}
+
+/* Chỉnh lại cái li một chút cho thoáng */
+.search-suggestions li {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center; /* Căn icon User ở giữa theo chiều dọc */
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-suggestions li:hover {
+    background: #f1f5f9;
+}

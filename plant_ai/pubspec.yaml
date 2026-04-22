@@ -1,0 +1,71 @@
+name: plant_ai
+description: "Hệ thống PlantAI nhận diện bệnh cây trồng v1"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_local_notifications: ^17.0.0
+  firebase_messaging: ^16.1.3
+  google_maps_flutter: ^2.10.0
+  geolocator: any
+  geocoding: any
+  google_sign_in: ^6.1 .5
+  intl: ^0.20.2
+  table_calendar: ^3.1.2
+  flutter_facebook_auth: ^6.0.4
+  envied: ^0.5.4
+  shared_preferences: ^2.2.2
+  mongo_dart: ^0.10.0  
+  google_fonts: ^6.1.0
+  cupertino_icons: ^1.0.8
+  camera: ^0.12.0 
+  image_picker: ^1.2.1 # Để chọn từ kho 2230 ảnh của ông
+  path_provider: ^2.1.1 
+  path: ^1.8.3
+  tflite_flutter: ^0.10.1
+  connectivity_plus: ^6.0.3
+  mailer: ^6.0.0
+  # Thêm thư viện image để thay thế helper cũ kỹ, giúp xử lý ảnh mượt hơn
+  image: ^4.2.0 
+  firebase_core: ^4.4.0
+  http: ^1.6.0
+  flutter_markdown: ^0.7.7+1
+
+dependency_overrides:
+  tflite_flutter:
+    git:
+      url: https://github.com/tensorflow/flutter-tflite.git
+      ref: main
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.8
+  envied_generator: ^0.5.4
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon" # Tên file icon sinh ra trên Android
+  ios: false # Có tạo icon cho iOS không? (True là có)
+  min_sdk_android: 21
+  image_path: "assets/icon/app.png"  # <-- Đường dẫn ảnh bạn vừa chép vào
+
+  
+flutter:
+  uses-material-design: true
+
+  # Khai báo đầy đủ các chú cụ hình ảnh cho luồng Animation
+  assets:
+    - assets/images/
+    - assets/Plant/
+    - assets/models/
+    - assets/Hanbook/
+    # - assets/models/plant_ai_quantized.tflite (Sau này bỏ model vào đây)
