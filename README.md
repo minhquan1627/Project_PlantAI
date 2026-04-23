@@ -1,6 +1,5 @@
-import os
 
-readme_content = """# 🌿 Project_PlantAI: Hệ Sinh Thái AI Chẩn Đoán Bệnh Lý Cây Trồng
+# 🌿 Project_PlantAI: Hệ Sinh Thái AI Chẩn Đoán Bệnh Lý Cây Trồng
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Framework-Flask-red.svg)](https://flask.palletsprojects.com/)
