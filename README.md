@@ -67,7 +67,7 @@ Dưới đây là một số hình ảnh thực tế của ứng dụng di độ
   </table>
 </div>
 
-### 🎯 Các Tính năng Độc đáo khác trên Mobile App
+### Các Tính năng Độc đáo khác trên Mobile App
 
 * **Định vị & Quản lý Vị trí:** Sử dụng GPS để lấy chính xác tọa độ vị trí chẩn đoán, hỗ trợ lập bản đồ dịch bệnh.
 * **Tích hợp Dữ liệu Thời tiết (Weather Data):** Lấy dữ liệu thực tế về nhiệt độ và độ ẩm từ các nguồn API thời tiết tại vị trí của người dùng, giúp phân tích nguy cơ bùng phát bệnh.
@@ -75,7 +75,7 @@ Dưới đây là một số hình ảnh thực tế của ứng dụng di độ
 
 ---
 
-## 🛠 Stack Công nghệ
+## Stack Công nghệ
 
 ### AI & Deep Learning
 * **Mô hình cốt lõi:** SAM2-L.
