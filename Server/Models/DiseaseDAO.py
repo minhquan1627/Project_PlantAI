@@ -26,8 +26,12 @@ class DiseaseDAO:
                         name=data.get('name'),
                         scientificName=data.get('scientificName'),
                         affected_plant=data.get('affected_plant', "Chưa cập nhật"),
-                        stage=data.get('stage'),
-                        part=data.get('part'),
+                        
+                        # 👉 THAY ĐỔI Ở ĐÂY: Cập nhật 3 trường mới
+                        incubation_time=data.get('incubation_time', "Chưa cập nhật"),
+                        outbreak_season=data.get('outbreak_season', "Chưa cập nhật"),
+                        danger_level=data.get('danger_level', "Chưa cập nhật"),
+                        
                         status=data.get('status', 'Visible'),
                         image=data.get('image', ""),
                         content=content_obj,
@@ -40,8 +44,12 @@ class DiseaseDAO:
                     name=data.get('name'),
                     scientificName=data.get('scientificName'),
                     affected_plant=data.get('affected_plant', "Chưa cập nhật"),
-                    stage=data.get('stage'),
-                    part=data.get('part'),
+                    
+                    # 👉 THAY ĐỔI Ở ĐÂY: Thêm 3 trường mới
+                    incubation_time=data.get('incubation_time', "Chưa cập nhật"),
+                    outbreak_season=data.get('outbreak_season', "Chưa cập nhật"),
+                    danger_level=data.get('danger_level', "Chưa cập nhật"),
+                    
                     status=data.get('status', 'Visible'),
                     image=data.get('image', ""),
                     content=content_obj
@@ -68,13 +76,17 @@ class DiseaseDAO:
                     "name": getattr(d, 'name', "Chưa có tên"),
                     "scientificName": getattr(d, 'scientificName', "Chưa cập nhật"),
                     "affected_plant": getattr(d, 'affected_plant', "Chưa cập nhật"),
-                    "stage": getattr(d, 'stage', "Chưa cập nhật"),
-                    "part": getattr(d, 'part', "Chưa cập nhật"),
+                    
+                    # 👉 THAY ĐỔI Ở ĐÂY: Trả về 3 trường mới cho Frontend
+                    "incubation_time": getattr(d, 'incubation_time', "Chưa cập nhật"),
+                    "outbreak_season": getattr(d, 'outbreak_season', "Chưa cập nhật"),
+                    "danger_level": getattr(d, 'danger_level', "Chưa cập nhật"),
+                    
                     "status": getattr(d, 'status', "Visible"),
                     "image": getattr(d, 'image', ""),
                     "updatedAt": d.updatedAt.strftime("%d/%m/%Y") if getattr(d, 'updatedAt', None) else "",
                     
-                    # 👉 Lấy 5 tab an toàn: Có content thì lấy, không thì để chuỗi rỗng ""
+                    # Lấy 5 tab an toàn
                     "content": {
                         "overview": getattr(content_obj, 'overview', "") if content_obj else "",
                         "symptoms": getattr(content_obj, 'symptoms', "") if content_obj else "",
@@ -87,13 +99,24 @@ class DiseaseDAO:
         except Exception as e:
             import traceback
             print(f"❌ Lỗi DAO (get_all_diseases): {traceback.format_exc()}")
-            raise e # Ném lỗi ra ngoài để API UserAPI hứng và báo 500
+            raise e
         
     @staticmethod
     def get_total_diseases():
         try:
-            # Chỉ làm đúng 1 việc: Đếm tổng số bệnh có trong Database
             return Disease.objects.count()
         except Exception as e:
             print(f"❌ Lỗi đếm số lượng bệnh: {e}")
-            return 0 # Nếu lỗi thì trả về 0 cho an toàn
+            return 0 
+        
+    @staticmethod
+    def delete_disease(disease_id):
+        try:
+            from bson import ObjectId
+            disease = Disease.objects(id=ObjectId(disease_id)).first()
+            if disease:
+                disease.delete()
+                return True, "Xóa thành công!"
+            return False, "Không tìm thấy dữ liệu bệnh!"
+        except Exception as e:
+            return False, str(e)

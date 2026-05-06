@@ -185,8 +185,10 @@ const DiseaseManagement = () => {
       // 1. Lấy dữ liệu (Riêng affected_plant lấy trực tiếp từ STATE của ông)
       const nameInput = document.querySelector('input[placeholder="VD: Bệnh Bỏng Lá Lúa"]')?.value.trim();
       const sciNameInput = document.querySelector('.italic-input')?.value.trim();
-      const stageInput = document.querySelector('input[placeholder="VD: Làm đòng - Trổ"]')?.value.trim();
-      const partInput = document.querySelector('input[placeholder="VD: Chóp và mép lá"]')?.value.trim();
+
+      const incubationInput = document.getElementById('incubationInput')?.value.trim();
+      const seasonInput = document.getElementById('seasonInput')?.value.trim();
+      const dangerInput = document.getElementById('dangerInput')?.value.trim();
 
       // 2. VALIDATION: Bắt lỗi
       if (!nameInput) {
@@ -198,10 +200,6 @@ const DiseaseManagement = () => {
         alert(" Lỗi: Vui lòng chọn [Cây bị ảnh hưởng] từ danh sách!");
         return;
       }
-      if (!stageInput) {
-        alert(" Lỗi: Vui lòng nhập [Giai đoạn gây hại]!");
-        return;
-      }
 
       // 3. ĐÓNG GÓI DỮ LIỆU
       const token = localStorage.getItem("token");
@@ -209,13 +207,14 @@ const DiseaseManagement = () => {
         id: editingDisease?.id,
         name: nameInput,
         scientificName: sciNameInput || "Chưa cập nhật",
-        
-        //  Lấy dữ liệu trực tiếp từ State cực kỳ an toàn
         affected_plant: selectedPlant, 
         
-        stage: stageInput, 
-        part: partInput || "Chưa cập nhật",
-        image: thumbnailPreview, // Nhớ kèm cái state ảnh bìa ở bước trước
+        // 👉 GỬI 3 TRƯỜNG MỚI NÀY LÊN BACKEND
+        incubation_time: incubationInput || "Chưa cập nhật",
+        outbreak_season: seasonInput || "Chưa cập nhật",
+        danger_level: dangerInput || "Chưa cập nhật",
+        
+        image: thumbnailPreview, 
         content: contentValues, 
         status: "Visible"
       };
@@ -238,8 +237,31 @@ const DiseaseManagement = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    // Hiện popup hỏi lại cho chắc chắn
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bệnh này không? Hành động này không thể hoàn tác!")) {
+      return; 
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      // Gọi API xóa
+      const res = await axios.delete(`${API_URL}/disease/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data.status === "success") {
+        alert("Đã xóa dữ liệu bệnh thành công!");
+        fetchDiseases(); // Tự động load lại bảng mà không cần F5
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa:", error);
+      alert("Lỗi xóa dữ liệu: " + (error.response?.data?.message || "Lỗi máy chủ"));
+    }
+  };
+
   const handleToggleVisibility = (id) => {
-    setDiseases(diseases.map(d => {
+    setDiseases(diseases.map(d => { 
       if (d.id === id) return { ...d, status: d.status === 'Visible' ? 'Hidden' : 'Visible' };
       return d;
     }));
@@ -361,7 +383,7 @@ const DiseaseManagement = () => {
               <tr>
                 <th>Thông tin Bệnh</th>
                 <th>Loại cây trồng</th>
-                <th>Giai đoạn / Bộ phận</th>
+                <th>Ủ bệnh / Nguy hiểm</th>
                 <th>Cập nhật lần cuối</th>
                 <th>Trạng thái</th>
                 <th style={{ textAlign: 'right' }}>Thao tác</th>
@@ -386,8 +408,8 @@ const DiseaseManagement = () => {
                   </td>
                   <td>
                     <div className="disease-meta-cell">
-                      <span><strong>Giai đoạn:</strong> {disease.stage}</span>
-                      <span><strong>Bộ phận:</strong> {disease.part}</span>
+                      <span><strong>Ủ bệnh:</strong> {disease.incubation_time}</span>
+                      <span><strong>Nguy hiểm:</strong> {disease.danger_level}</span>
                     </div>
                   </td>
                   <td><span className="join-date">{disease.updatedAt}</span></td>
@@ -408,7 +430,14 @@ const DiseaseManagement = () => {
                       <button className="icon-btn edit" title="Chỉnh sửa" onClick={() => handleEdit(disease)}>
                         <Edit size={18} />
                       </button>
-                      <button className="icon-btn delete" title="Xóa dữ liệu"><Trash2 size={18} /></button>
+                      {/* 👉 TÌM ĐẾN DÒNG NÀY VÀ SỬA THÀNH: */}
+                        <button 
+                          className="icon-btn delete" 
+                          title="Xóa dữ liệu" 
+                          onClick={() => handleDelete(disease.id)} // GẮN HÀM VÀO ĐÂY
+                        >
+                          <Trash2 size={18} />
+                        </button>
                     </div>
                   </td>
                 </tr>
@@ -476,8 +505,8 @@ const DiseaseManagement = () => {
             <input type="text" className="form-input italic-input" defaultValue={editingDisease?.scientificName} placeholder="VD: Monographella albescens" />
           </div>
           <div className="form-group">
-            <label>Giai đoạn gây hại</label>
-            <input type="text" className="form-input" defaultValue={editingDisease?.stage} placeholder="VD: Làm đòng - Trổ" />
+            <label>Thời gian ủ bệnh</label>
+            <input type="text" id="incubationInput" className="form-input" defaultValue={editingDisease?.incubation_time} placeholder="VD: 7-10 ngày" />
           </div>
           <div className="form-group">
             <label>Cây bị ảnh hưởng</label>
@@ -511,8 +540,19 @@ const DiseaseManagement = () => {
             </div>
           </div>
           <div className="form-group">
-            <label>Bộ phận gây hại</label>
-            <input type="text" className="form-input" defaultValue={editingDisease?.part} placeholder="VD: Chóp và mép lá" />
+            <label>Mùa bùng phát</label>
+            <input type="text" id="seasonInput" className="form-input" defaultValue={editingDisease?.outbreak_season} placeholder="VD: Mùa lạnh, sương" />
+          </div>
+
+          <div className="form-group">
+            <label>Mức độ nguy hiểm</label>
+            <select id="dangerInput" className="form-input" defaultValue={editingDisease?.danger_level || ""}>
+              <option value="" disabled>-- Chọn mức độ --</option>
+              <option value="Nhẹ">Nhẹ</option>
+              <option value="Trung bình">Trung bình</option>
+              <option value="Nghiêm trọng">Nghiêm trọng</option>
+              <option value="Rất nghiêm trọng">Rất nghiêm trọng</option>
+            </select>
           </div>
         </div>
 

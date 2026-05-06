@@ -495,6 +495,19 @@ def get_disease_list():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
     
+@user_bp.route('/disease/delete/<disease_id>', methods=['DELETE', 'OPTIONS'])
+@token_required
+def delete_disease(disease_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        success, message = DiseaseDAO.delete_disease(disease_id)
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        else:
+            return jsonify({"status": "error", "message": message}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
 
 # ================================================================
 # SECTION: QUẢN LÝ DỮ LIỆU CẨM NANG - DÀNH CHO ADMIN

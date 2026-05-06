@@ -134,26 +134,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  // --- 5. HÀM XỬ LÝ FACEBOOK (Dùng SocialAuthService) ---
-  void _handleFacebookSignIn() async {
-    if (_isOffline) {
-      _showMsg("Cần có mạng để đăng ký bằng Facebook");
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    // Gọi Service
-    var user = await SocialAuthService.signInWithFacebook();
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-      if (user != null) {
-        _showMsg("Xin chào, ${user['name']}!");
-        // TODO: Chuyển hướng sang HomeScreen
-      }
-    }
-  }
 
   void _showMsg(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -358,16 +338,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: _handleGoogleSignIn, // <--- Gọi hàm xử lý
                       child: _SocialBtn(
                         child: Image.asset("assets/images/google_icon.png", height: 30, width: 30),
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 20),
-                    
-                    // NÚT FACEBOOK
-                    GestureDetector(
-                      onTap: _handleFacebookSignIn, // <--- Gọi hàm xử lý
-                      child: const _SocialBtn(
-                        child: Icon(Icons.facebook, color: Colors.blue, size: 30),
                       ),
                     ),
                   ]),

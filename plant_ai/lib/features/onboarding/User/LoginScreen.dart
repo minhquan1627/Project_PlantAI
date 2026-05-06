@@ -166,34 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // --- XỬ LÝ ĐĂNG NHẬP FACEBOOK ---
-  void _handleFacebookSignIn() async {
-    if (_isOffline) {
-      _showMsg("Cần có mạng để đăng nhập Facebook");
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    var user = await SocialAuthService.signInWithFacebook();
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-      if (user != null) {
-         
-         
-         // LƯU TRẠNG THÁI ĐĂNG NHẬP TƯƠNG TỰ GOOGLE
-         final prefs = await SharedPreferences.getInstance();
-         await prefs.setBool('is_logged_in', true);
-         await prefs.setString('current_user_email', user['email'] ?? "");
-
-         Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-         );
-      }
-    }
-  }
+  
 
   void _showMsg(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -366,15 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   
-                  const SizedBox(width: 20),
                   
-                  // --- NÚT FACEBOOK ---
-                  GestureDetector(
-                    onTap: _handleFacebookSignIn, 
-                    child: const _SocialBtn(
-                      child: Icon(Icons.facebook, color: Colors.blue, size: 30),
-                    ),
-                  ),
                 ]),
               
               const SizedBox(height: 30),

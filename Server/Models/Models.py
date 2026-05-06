@@ -51,9 +51,12 @@ class Disease(Document):
     # Dùng _id tự sinh của MongoDB hoặc tự định nghĩa như Admin
     name = StringField(required=True)
     scientificName = StringField(default="Chưa cập nhật")
+
     affected_plant = StringField(default="Chưa cập nhật")
-    stage = StringField(default="Chưa cập nhật")
-    part = StringField(default="Chưa cập nhật")
+    incubation_time = StringField(default="Chưa cập nhật") 
+    outbreak_season = StringField(default="Chưa cập nhật") 
+    danger_level = StringField(default="Chưa cập nhật")
+
     status = StringField(default="Visible") # "Visible" | "Hidden"
     image = StringField(default="")
     

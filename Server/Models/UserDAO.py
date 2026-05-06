@@ -248,7 +248,6 @@ class UserDAO:
             return UserDAO.get_dummy_data(time_filter)
 
         return final_data
-
    
     @staticmethod
     def get_dummy_data(time_filter):
