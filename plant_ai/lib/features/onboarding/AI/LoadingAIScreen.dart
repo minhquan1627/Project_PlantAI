@@ -167,7 +167,7 @@ class _LoadingAIScreenState extends State<LoadingAIScreen> {
   }
 
   // --- WIDGET VẼ TỪNG BƯỚC ---
-  Widget _buildStepItem({required int stepIndex, required String title}) {
+ Widget _buildStepItem({required int stepIndex, required String title}) {
     // Trạng thái của bước hiện tại
     bool isCompleted = _currentStep > stepIndex;
     bool isActive = _currentStep == stepIndex;
@@ -175,6 +175,7 @@ class _LoadingAIScreenState extends State<LoadingAIScreen> {
     Color itemColor = (isActive || isCompleted) ? const Color.fromARGB(255, 166, 205, 112) : Colors.grey[600]!;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Giúp Icon và Text căn đều phần đầu nếu Text rớt thành 2 dòng
       children: [
         // Cột mốc Icon
         SizedBox(
@@ -191,13 +192,17 @@ class _LoadingAIScreenState extends State<LoadingAIScreen> {
         ),
         const SizedBox(width: 15),
         
-        // Cột Chữ
-        Text(
-          title,
-          style: GoogleFonts.roboto(
-            fontSize: 16,
-            fontWeight: (isActive || isCompleted) ? FontWeight.bold : FontWeight.normal,
-            color: itemColor,
+        // Cột Chữ (ĐÃ ĐƯỢC FIX LỖI OVERFLOW)
+        Expanded( // 🚀 NƯỚC ĐI QUYẾT ĐỊNH Ở ĐÂY
+          child: Text(
+            title,
+            style: GoogleFonts.roboto(
+              fontSize: 16,
+              fontWeight: (isActive || isCompleted) ? FontWeight.bold : FontWeight.normal,
+              color: itemColor,
+            ),
+            maxLines: 2, // Đảm bảo nếu chữ dài quá thì tự rớt tối đa 2 dòng
+            overflow: TextOverflow.ellipsis, // Nếu vượt quá 2 dòng sẽ hiện dấu "..."
           ),
         ),
       ],

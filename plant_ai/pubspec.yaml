@@ -37,6 +37,7 @@ dependencies:
   firebase_core: ^4.4.0
   http: ^1.6.0
   flutter_markdown: ^0.7.7+1
+  bcrypt: ^1.2.0
 
 dependency_overrides:
   tflite_flutter:

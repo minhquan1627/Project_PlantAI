@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'dart:async';
 import '../../../../core/services/network_manager.dart';
 import '../../../../core/services/Checkin/social_auth_service.dart';
-import '../../../../core/API/UserAPI.dart';  
+import '../../../../core/API/UserAPI.dart';
+import '../Effect/ScanTutorialScreen.dart';
 import '../../../../core/services/Checkin/JWT.dart'; // Import Service vừa tạo
 import 'RegisterScreen.dart';
 import 'ForgotpasswordScreen.dart';
@@ -23,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberPassword = false;
   bool _isLoading = false;
 
+  Timer? _networkTimer;
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -31,7 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     _checkAutoLogin(); // <--- 1. GỌI HÀM KIỂM TRA ĐĂNG NHẬP TỰ ĐỘNG ĐẦU TIÊN
     _setupNetworkListener(); 
+    _startNetworkPolling();
     _loadUserCredentials(); 
+  }
+
+  @override
+  void dispose() {
+    // 🚀 DẬP TẮT TIMER TRƯỚC KHI CHUYỂN TRANG
+    _networkTimer?.cancel(); 
+    
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   // --- HÀM TỰ ĐỘNG ĐĂNG NHẬP (AUTO LOGIN) ---
@@ -44,6 +58,20 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     }
+  }
+
+  void _startNetworkPolling() {
+    _networkTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      bool currentStatus = await NetworkManager().isOffline();
+      
+      // Chỉ setState và vẽ lại màn hình nếu trạng thái mạng THỰC SỰ THAY ĐỔI
+      if (mounted && _isOffline != currentStatus) {
+        setState(() {
+          _isOffline = currentStatus;
+        });
+        print("🔄 Polling 5s: Ứng dụng vừa chuyển sang ${_isOffline ? 'OFFLINE' : 'ONLINE'}");
+      }
+    });
   }
 
   void _setupNetworkListener() async {
@@ -155,6 +183,8 @@ class _LoginScreenState extends State<LoginScreen> {
         String sessionToken = user['token'] ?? "google_token_${DateTime.now().millisecondsSinceEpoch}";
         await prefs.setString('auth_token', sessionToken);
         await prefs.setString('current_user_email', user['email'] ?? "");
+
+        if (!mounted) return;
 
         Navigator.pushReplacement(
           context,
@@ -285,15 +315,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 shadowColor: const Color(0xFF8DAA5B).withOpacity(0.4),
               ),
               onPressed: () {
-                if (_isOffline) {
-                  print("🛠 Chế độ Offline: Mở Camera/Thư viện ngay!");
-                  // Navigator.push(context, MaterialPageRoute(builder: (_) => OfflineScanScreen()));
-                } else {
-                  if (!_isLoading) {
-                        _handleLogin();
+                  if (_isOffline) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ScanTutorialScreen()),
+                    );
+                  } else {
+                    if (!_isLoading) {
+                      _handleLogin();
+                    }
                   }
-                }
-              }, 
+                }, 
               child: _isLoading 
                   ? const SizedBox(
                       height: 25, 
@@ -303,21 +335,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                  : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(_isOffline ? Icons.camera_alt : Icons.login, color: Colors.white),
-                      const SizedBox(width: 10),
-                      Text(
-                        _isOffline ? "Chẩn đoán Offline ngay" : "Đăng nhập", 
-                        style: const TextStyle(
-                          color: Colors.white, 
-                          fontSize: 18, 
-                          fontWeight: FontWeight.bold
-                        )
+                  : FittedBox( // 🚀 GIẢI PHÁP Ở ĐÂY: Ép nội dung thu nhỏ vừa với nút
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(_isOffline ? Icons.camera_alt : Icons.login, color: Colors.white),
+                          const SizedBox(width: 10),
+                          Text(
+                            _isOffline ? "Chẩn đoán Offline ngay" : "Đăng nhập", 
+                            style: const TextStyle(
+                              color: Colors.white, 
+                              fontSize: 18, 
+                              fontWeight: FontWeight.bold
+                            )
+                          ),
+                        ],
                       ),
-                    ],
-                  )
+                    ),
             ),
             
             const SizedBox(height: 30),

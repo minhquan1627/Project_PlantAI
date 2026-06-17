@@ -31,7 +31,7 @@ class PlantAPI {
       return plants;
       
     } catch (e) {
-      log('❌ PlantAPI Error: $e');
+      log('PlantAPI Error: $e');
       return [];
     }
   }

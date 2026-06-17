@@ -1,1 +1,1 @@
-from .Models import User, Admin, Disease, DiseaseContent
+from .Models import User, Admin, Disease, DiseaseContent, CommunityPost, Comment

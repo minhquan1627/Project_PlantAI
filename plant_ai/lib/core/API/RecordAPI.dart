@@ -3,7 +3,7 @@ import 'connection/MongoDB.dart';
 import 'connection/scan_record.dart';
 
 class RecordAPI {
-  // 🚀 Lấy Collection "scan_history" (Hệ thống sẽ tự tạo nếu chưa có)
+  // Lấy Collection "scan_history" (Hệ thống sẽ tự tạo nếu chưa có)
   static Future<DbCollection> _getCollection() async {
     // Nếu db chưa khởi tạo hoặc bị mất kết nối, phải gọi connect lại ngay
     if (MongoDatabase.db == null || !MongoDatabase.db!.isConnected) {
@@ -20,7 +20,7 @@ class RecordAPI {
       await collection.insertOne(record.toMap());
       print(" PlantAPI: Đã lưu lịch sử cho User ${record.userId}");
     } catch (e) {
-      print("❌ PlantAPI: Lỗi khi lưu - $e");
+      print("PlantAPI: Lỗi khi lưu - $e");
     }
   }
 
@@ -35,7 +35,7 @@ class RecordAPI {
           .toList();
       return results.map((e) => ScanRecord.fromMap(e)).toList();
     } catch (e) {
-      print("❌ PlantAPI: Lỗi khi lấy dữ liệu - $e");
+      print("PlantAPI: Lỗi khi lấy dữ liệu - $e");
       return [];
     }
   }
@@ -53,7 +53,7 @@ class RecordAPI {
     await collection.remove(where.id(ObjectId.fromHexString(cleanId)));
     print("RecordAPI: Đã xóa bản ghi sạch $cleanId");
   } catch (e) {
-    print("❌ RecordAPI: Lỗi khi xóa - $e");
+    print("RecordAPI: Lỗi khi xóa - $e");
   }
   }
 
@@ -77,10 +77,10 @@ class RecordAPI {
             : modify.set('garden_id', gardenId) // Có gardenId -> Gắn vào vườn
       );
       
-      print("✅ RecordAPI: Đã ${gardenId == null ? 'gỡ' : 'gắn'} lịch sử $cleanId với vườn $gardenId");
+      print("RecordAPI: Đã ${gardenId == null ? 'gỡ' : 'gắn'} lịch sử $cleanId với vườn $gardenId");
       return true;
     } catch (e) {
-      print("❌ Lỗi assignToGarden: $e");
+      print("Lỗi assignToGarden: $e");
       return false;
     }
   }

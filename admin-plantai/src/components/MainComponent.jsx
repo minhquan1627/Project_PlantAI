@@ -20,6 +20,7 @@ import ProfilePanel from './ProfilePanelComponent.jsx';
 import UserManagement from './UserManagementComponent.jsx';
 import DiseaseManagement from './DiseaseManagementComponent.jsx';
 import HandbookManagement from './HandbookManagementComponent.jsx';
+import CommunityManagement from './CommunityManagementComponent.jsx';
 import logoImg from '../assets/image.png';
 
 const API_URL = "http://127.0.0.1:3000/api";
@@ -119,8 +120,9 @@ useEffect(() => {
         { id: 'users', label: 'Khách hàng', icon: <Users size={18} /> },
         { id: 'diseases', label: 'Dữ liệu bệnh', icon: <Leaf size={18} />},
         { id: 'handbook', label: 'Cẩm nang xanh', icon: <Book size={18} />},
+        { id: 'community', label: 'Cộng đồng', icon: <Users size={18} /> },
       ]
-    }
+    },
   ];
 
   const handleExportPDF = () => {
@@ -419,6 +421,8 @@ useEffect(() => {
             {activeTab === 'diseases' && <DiseaseManagement />}
 
             {activeTab === 'handbook' && <HandbookManagement />}
+
+            {activeTab === 'community' && <CommunityManagement />}
           </div>
         </div>
       </main>

@@ -1,7 +1,7 @@
 from mongoengine import (
     Document, EmbeddedDocument, StringField, IntField, FloatField, 
     EmbeddedDocumentField, ListField, EmailField, DateTimeField,
-    ObjectIdField, ReferenceField, BooleanField
+    ObjectIdField, ReferenceField, BooleanField, DictField
 )
 
 from datetime import datetime
@@ -85,5 +85,40 @@ class Handbook(Document):
     meta = {
         'collection': 'handbooks',
         'ordering': ['-isPinned', '-publishDate'], # Ưu tiên bài Ghim lên trước, sau đó là bài mới nhất
+        'strict': False
+    }
+
+class Comment(Document):
+    postId = ObjectIdField(required=True)  # DB là ObjectId
+    text = StringField(required=True)      # DB là text
+    authorData = DictField()               # DB lưu nguyên 1 object authorData
+    likes = ListField(default=list) 
+    createdAt = StringField()              # 👉 SỬA: DB đang lưu String, không phải DateTime
+    replyToId = ObjectIdField(null=True)   # DB là ObjectId hoặc null
+
+    meta = {
+        'collection': 'comments', # Đã khớp ảnh 2
+        'strict': False
+    }
+
+# Database thiết kế cho Bài đăng (Post)
+class CommunityPost(Document):
+    authorId = ObjectIdField(required=True) # DB là ObjectId
+    content = StringField(required=True)
+    imageUrl = StringField(default=None, null=True)
+    
+    likes = ListField(default=list) 
+    commentsCount = IntField(default=0)
+    sharesCount = IntField(default=0) 
+    
+    createdAt = StringField()               # 👉 SỬA: DB đang lưu String
+    
+    # Các trường phục vụ Admin Web (DB chưa có thì nó sẽ lấy default)
+    status = StringField(default="Visible")
+    isPinned = BooleanField(default=False)
+
+    meta = {
+        'collection': 'posts', # 👉 SỬA: Đã khớp với ảnh 1 của ông
+        'ordering': ['-isPinned', '-createdAt'], 
         'strict': False
     }

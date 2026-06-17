@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:convert'; 
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:bcrypt/bcrypt.dart';
 // Import file kết nối để lấy biến userCollection
 import 'connection/MongoDB.dart'; 
 import 'package:http/http.dart' as http;
@@ -18,18 +19,39 @@ class UserAPI {
     try {
       await _ensureConnected();
       
+      // BƯỚC 1: Chỉ tìm User bằng Email (Không được truy vấn trực tiếp bằng Password nữa)
       final user = await MongoDatabase.userCollection!.findOne({
         'email': email,
-        'password': password
       });
-      return user;
+
+      if (user == null) {
+        return null; // Không tìm thấy email
+      }
+
+      // BƯỚC 2: Kiểm tra mật khẩu (So sánh password người dùng nhập với mã Hash trong DB)
+      String hashedDbPassword = user['password'];
+      
+      // Tránh lỗi crash nếu user là tài khoản Social (không có password thật)
+      if (hashedDbPassword.startsWith("SOCIAL_")) {
+        log('Tài khoản này được tạo bằng Google/Facebook, không thể đăng nhập bằng mật khẩu thường.');
+        return null;
+      }
+
+      bool checkPassword = BCrypt.checkpw(password, hashedDbPassword);
+
+      if (checkPassword) {
+        return user; // Mật khẩu khớp -> Cho vào
+      } else {
+        return null; // Sai mật khẩu
+      }
+
     } catch (e) {
-      log('❌ UserAPI Error (Login): $e');
+      log('UserAPI Error (Login): $e');
       return null;
     }
   }
 
-  // 2. ĐĂNG KÝ
+  // 2. ĐĂNG KÝ 
   static Future<String> registerUser(String name ,String email, String password) async {
     try {
       await _ensureConnected();
@@ -39,23 +61,26 @@ class UserAPI {
         return "EMAIL_EXISTED";
       }
 
+      // HASH PASSWORD Ở ĐÂY (Tạo ra chuỗi muối ngẫu nhiên để băm)
+      String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
       var id = ObjectId();
       await MongoDatabase.userCollection!.insert({
         "_id": id,
         "name": name,
         "email": email,
-        "password": password,
+        "password": hashedPassword, // LƯU CHUỖI ĐÃ BĂM VÀO DB
         "createdAt": DateTime.now().toIso8601String(),
       });
 
       return "SUCCESS";
     } catch (e) {
-      log('❌ UserAPI Error (Register): $e');
+      log('UserAPI Error (Register): $e');
       return "ERROR";
     }
   }
 
-  // 3. ĐỔI MẬT KHẨU (RESET PASSWORD)
+  // 3. ĐỔI MẬT KHẨU (Băm mật khẩu mới trước khi đè lên mật khẩu cũ)
   static Future<String> resetPassword(String email, String newPassword) async {
     try {
       await _ensureConnected();
@@ -65,14 +90,17 @@ class UserAPI {
         return "EMAIL_NOT_FOUND";
       }
 
+      // HASH PASSWORD MỚI
+      String hashedNewPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
       await MongoDatabase.userCollection!.update(
         where.eq('email', email), 
-        modify.set('password', newPassword)
+        modify.set('password', hashedNewPassword) // Set chuỗi băm mới
       );
 
       return "SUCCESS";
     } catch (e) {
-      log('❌ UserAPI Error (ResetPass): $e');
+      log('UserAPI Error (ResetPass): $e');
       return "ERROR";
     }
   }
@@ -109,11 +137,11 @@ class UserAPI {
           // Lấy cái link xịn sò về
           String secureUrl = jsonResult['secure_url']; 
           
-          log('✅ Upload Cloudinary thành công: $secureUrl');
+          log('Upload Cloudinary thành công: $secureUrl');
           // Cập nhật lại cái link xịn vào mảng dữ liệu để chuẩn bị lưu vô MongoDB
           updateData['avatar'] = secureUrl; 
         } else {
-          log('❌ Lỗi upload Cloudinary: Mã ${response.statusCode}');
+          log('Lỗi upload Cloudinary: Mã ${response.statusCode}');
           return "ERROR_UPLOAD_IMAGE";
         }
       }
@@ -133,19 +161,19 @@ class UserAPI {
         modifier
       );
 
-      print("🔧 LOG TỪ MONGODB: ${result.document}"); 
+      print("LOG TỪ MONGODB: ${result.document}"); 
 
       if (result.isSuccess && result.nMatched > 0) {
         return "SUCCESS";
       } else if (result.isSuccess && result.nMatched == 0) {
-        log('⚠️ Không tìm thấy User với email: $email');
+        log('Không tìm thấy User với email: $email');
         return "NOT_FOUND";
       } else {
         return "Lỗi DB: ${result.writeError?.errmsg ?? 'Không xác định'}";
       }
 
     } catch (e) {
-      print("🔥 LỖI CATCH MONGODB/CLOUDINARY: $e");
+      print("LỖI CATCH MONGODB/CLOUDINARY: $e");
       return "Lỗi ngoại lệ: $e";
     }
   }
@@ -175,7 +203,7 @@ class UserAPI {
         return newUser;
       }
     } catch (e) {
-      log('❌ UserAPI Error (Social): $e');
+      log('UserAPI Error (Social): $e');
       return null;
     }
   }
@@ -191,12 +219,12 @@ class UserAPI {
       
       return user;
     } catch (e) {
-      log('❌ UserAPI Error (GetProfile): $e');
+      log('UserAPI Error (GetProfile): $e');
       return null;
     }
   }
 
-  // 🚀 HÀM "THẦN HỦY DIỆT": XÓA SẠCH DẤU VẾT NGƯỜI DÙNG
+  // HÀM "THẦN HỦY DIỆT": XÓA SẠCH DẤU VẾT NGƯỜI DÙNG
   static Future<String> deleteUserFullData(String userId, String email) async {
     try {
       await _ensureConnected();
@@ -213,7 +241,7 @@ class UserAPI {
         'ai_chats',     // Lịch sử chat với AI
       ];
 
-      log('⚠️ Bắt đầu dọn dẹp dữ liệu cho User: $email');
+      log('Bắt đầu dọn dẹp dữ liệu cho User: $email');
 
       // Chuyển String ID sang ObjectId của Mongo để xóa cho chuẩn
       var uId = ObjectId.fromHexString(userId);
@@ -222,20 +250,20 @@ class UserAPI {
         var col = db.collection(colName);
         // Xóa tất cả record có chứa user_id của người này
         await col.remove(where.eq('user_id', uId));
-        log('✅ Đã dọn dẹp Collection: $colName');
+        log('Đã dọn dẹp Collection: $colName');
       }
 
       // Cuối cùng mới xóa chính tài khoản User
       final result = await MongoDatabase.userCollection!.remove(where.eq('email', email));
 
       if (result['n'] > 0) {
-        log('🔥 THÀNH CÔNG: Tài khoản $email đã bay màu hoàn toàn!');
+        log('THÀNH CÔNG: Tài khoản $email đã bay màu hoàn toàn!');
         return "SUCCESS";
       } else {
         return "USER_NOT_FOUND";
       }
     } catch (e) {
-      log('❌ Lỗi Cascade Delete: $e');
+      log('Lỗi Cascade Delete: $e');
       return "ERROR";
     }
   }

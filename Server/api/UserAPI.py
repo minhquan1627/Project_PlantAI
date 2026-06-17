@@ -5,6 +5,7 @@ from datetime import datetime
 from Models.UserDAO import UserDAO
 from Models.DiseaseDAO import DiseaseDAO
 from Models.HandbookDAO import HandbookDAO
+from Models.CommunityDAO import CommunityDAO
 from bson import ObjectId
 import traceback
 
@@ -121,7 +122,6 @@ def verify_otp():
     # GỌI HÀM MỚI: verify_otp_and_promote
     result = AdminDAO.verify_otp_and_promote(email, otp)
     return jsonify(result), (200 if result["status"] == "success" else 400)
-
 
 ### 4. API Check Trạng Thái Duyệt (Dành cho React polling)
 @user_bp.route('/admin/check-status', methods=['GET'])
@@ -432,7 +432,7 @@ def get_dashboard_analytics():
     except Exception as e:
         # 6. In lỗi chi tiết ra Terminal để ông dễ fix (đừng giấu lỗi)
         import traceback
-        print("❌ LỖI BIỂU ĐỒ DASHBOARD:")
+        print(" LỖI BIỂU ĐỒ DASHBOARD:")
         print(traceback.format_exc())
         
         return jsonify({
@@ -535,5 +535,115 @@ def get_handbook_list():
     try:
         data = HandbookDAO.get_all_handbooks()
         return jsonify({"status": "success", "data": data}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
+@user_bp.route('/handbook/detail/<handbook_id>', methods=['GET', 'OPTIONS'])
+@token_required
+def get_handbook_detail(handbook_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        data = HandbookDAO.get_handbook_by_id(handbook_id)
+        if data:
+            return jsonify({"status": "success", "data": data}), 200
+        return jsonify({"status": "error", "message": "Không tìm thấy bài viết"}), 404
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@user_bp.route('/handbook/delete/<handbook_id>', methods=['DELETE', 'OPTIONS'])
+@token_required
+def delete_handbook(handbook_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        success, message = HandbookDAO.delete_handbook(handbook_id)
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        else:
+            return jsonify({"status": "error", "message": message}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+# ================================================================
+# SECTION: QUẢN LÝ DỮ LIỆU CỘNG ĐỒNG (COMMUNITY) - DÀNH CHO ADMIN
+# ================================================================
+
+@user_bp.route('/community/list', methods=['GET', 'OPTIONS'])
+@token_required
+def get_community_list():
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        data = CommunityDAO.get_all_posts()
+        # Dùng make_json_safe để xử lý sạch sẽ Datetime và ObjectId
+        return jsonify({"status": "success", "data": make_json_safe(data)}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@user_bp.route('/community/save', methods=['POST', 'OPTIONS'])
+@token_required
+def save_community_post():
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        data = request.json
+        success, message = CommunityDAO.save_admin_post(data)
+        
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        return jsonify({"status": "error", "message": message}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@user_bp.route('/community/post/status', methods=['POST', 'OPTIONS'])
+@token_required
+def update_community_status():
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        data = request.json
+        post_id = data.get('postId')
+        status = data.get('status')
+        
+        if not post_id or not status:
+            return jsonify({"status": "error", "message": "Thiếu thông tin bài viết hoặc trạng thái!"}), 400
+            
+        success, message = CommunityDAO.update_post_status(post_id, status)
+        
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        return jsonify({"status": "error", "message": message}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@user_bp.route('/community/post/delete/<post_id>', methods=['DELETE', 'OPTIONS'])
+@token_required
+def delete_community_post(post_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        success, message = CommunityDAO.delete_post(post_id)
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        return jsonify({"status": "error", "message": message}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# --- CÁC ROUTE QUẢN LÝ BÌNH LUẬN ---
+
+@user_bp.route('/community/post/<post_id>/comments', methods=['GET', 'OPTIONS'])
+@token_required
+def get_community_comments(post_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        comments = CommunityDAO.get_comments_by_post(post_id)
+        return jsonify({"status": "success", "data": make_json_safe(comments)}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@user_bp.route('/community/comment/delete/<comment_id>', methods=['DELETE', 'OPTIONS'])
+@token_required
+def delete_community_comment(comment_id):
+    if request.method == 'OPTIONS': return '', 200
+    try:
+        success, message = CommunityDAO.delete_comment_or_reply(comment_id)
+        if success:
+            return jsonify({"status": "success", "message": message}), 200
+        return jsonify({"status": "error", "message": message}), 400
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500

@@ -20,7 +20,7 @@ class LocationService {
     try {
       await setLocaleIdentifier("vi_VN"); 
     } catch (e) {
-      print("⚠️ Không set được Locale, sẽ dùng mặc định hệ thống.");
+      print("Không set được Locale, sẽ dùng mặc định hệ thống.");
     }
 
     // 3. Lấy tọa độ hiện tại

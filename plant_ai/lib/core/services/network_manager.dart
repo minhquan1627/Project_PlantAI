@@ -25,7 +25,7 @@ class NetworkManager {
     _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> result) {
       bool isOffline = result.contains(ConnectivityResult.none);
       _controller.add(isOffline); // Báo tin cho toàn app biết
-      print("📡 Trạng thái mạng thay đổi: ${isOffline ? 'Mất mạng' : 'Có mạng'}");
+      print("Trạng thái mạng thay đổi: ${isOffline ? 'Mất mạng' : 'Có mạng'}");
     });
   }
 }

@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 
 class WeatherService {
   // =======================================================================
-  // 🚀 HÀM 1: GỌI THỜI TIẾT TRỰC TIẾP TỪ TỌA ĐỘ GPS (DÙNG CHO VƯỜN MỚI)
+  // HÀM 1: GỌI THỜI TIẾT TRỰC TIẾP TỪ TỌA ĐỘ GPS (DÙNG CHO VƯỜN MỚI)
   // =======================================================================
   static Future<Map<String, double>?> getWeatherFromGPS(double lat, double lng) async {
     try {
-      print("🛰️ Đang chọc lên vệ tinh Open-Meteo tại tọa độ: [$lat, $lng]");
+      print("Đang chọc lên vệ tinh Open-Meteo tại tọa độ: [$lat, $lng]");
       
       // Link API Open-Meteo miễn phí 100%
       final weatherUrl = Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current=temperature_2m,relative_humidity_2m');
@@ -19,14 +19,14 @@ class WeatherService {
         double temp = weatherData['current']['temperature_2m'].toDouble();
         double humidity = weatherData['current']['relative_humidity_2m'].toDouble();
         
-        print("✅ Thành công! Lụm data thực tế từ GPS: $temp°C - Ẩm $humidity%"); 
+        print("Thành công! Lụm data thực tế từ GPS: $temp°C - Ẩm $humidity%"); 
         return {'temp': temp, 'humidity': humidity};
       } else {
-        print("❌ Lỗi API Vệ tinh: ${response.statusCode}");
+        print("Lỗi API Vệ tinh: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("❌ Lỗi mạng WeatherService: $e");
+      print("Lỗi mạng WeatherService: $e");
       return null;
     }
   }
@@ -90,11 +90,11 @@ class WeatherService {
         return await getWeatherFromGPS(targetLat, targetLon); // Tận dụng luôn hàm trên cho gọn
       }
 
-      print("⚠️ CẢNH BÁO: Kích hoạt khiên bảo vệ cho vườn cũ!");
+      print("CẢNH BÁO: Kích hoạt khiên bảo vệ cho vườn cũ!");
       return {'temp': 27.5, 'humidity': 78.0};
 
     } catch (e) {
-      print("❌ Lỗi sập nguồn WeatherService: $e");
+      print("Lỗi sập nguồn WeatherService: $e");
       return {'temp': 26.0, 'humidity': 80.0}; 
     }
   }

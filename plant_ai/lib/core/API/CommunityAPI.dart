@@ -42,7 +42,7 @@ import 'package:http/http.dart' as http;
         return postsCursor.map((json) => PostModel.fromJson(json)).toList();
 
       } catch (e) {
-        log('❌ CommunityAPI Error (GetPosts): $e');
+        log('CommunityAPI Error (GetPosts): $e');
         return <PostModel>[];
       }
     }
@@ -64,7 +64,7 @@ import 'package:http/http.dart' as http;
         ObjectId authorId = user['_id'];
         String? finalImageUrl; // Biến lưu link mây sau khi upload
 
-        // 🚀 1. KIỂM TRA & UPLOAD ẢNH LÊN CLOUDINARY (NẾU CÓ)
+        // 1. KIỂM TRA & UPLOAD ẢNH LÊN CLOUDINARY (NẾU CÓ)
         if (imageUrl != null && imageUrl.isNotEmpty) {
           if (!imageUrl.startsWith('http')) {
             // Nếu là đường dẫn cục bộ -> Bắn lên Cloudinary
@@ -89,9 +89,9 @@ import 'package:http/http.dart' as http;
               var jsonResult = json.decode(responseData);
               
               finalImageUrl = jsonResult['secure_url']; // Lấy link xịn
-              log('✅ Upload Cloudinary bài viết thành công: $finalImageUrl');
+              log('Upload Cloudinary bài viết thành công: $finalImageUrl');
             } else {
-              log('❌ Lỗi upload Cloudinary: Mã ${response.statusCode}');
+              log('Lỗi upload Cloudinary: Mã ${response.statusCode}');
               return "ERROR_UPLOAD_IMAGE"; // Báo lỗi nếu rớt mạng giữa chừng
             }
           } else {
@@ -100,7 +100,7 @@ import 'package:http/http.dart' as http;
           }
         }
 
-        // 🚀 2. TẠO OBJECT BÀI VIẾT & LƯU VÀO MONGODB
+        // 2. TẠO OBJECT BÀI VIẾT & LƯU VÀO MONGODB
         var newPost = {
           "_id": ObjectId(),
           "authorId": authorId, 
@@ -117,7 +117,7 @@ import 'package:http/http.dart' as http;
         return "SUCCESS";
 
       } catch (e) {
-        log('❌ CommunityAPI Error (CreatePost): $e');
+        log('CommunityAPI Error (CreatePost): $e');
         return "ERROR";
       }
     }
@@ -128,7 +128,7 @@ import 'package:http/http.dart' as http;
         await _ensureConnected();
         final pId = mongo.ObjectId.fromHexString(postId);
 
-        // 🛑 LẤY DỮ LIỆU TRỰC TIẾP: Cực nhanh, không dùng $lookup nữa!
+        // LẤY DỮ LIỆU TRỰC TIẾP: Cực nhanh, không dùng $lookup nữa!
         final comments = await MongoDatabase.db!
             .collection('comments')
             .find(mongo.where.eq('postId', pId)) // Lấy thẳng từ DB ra
@@ -136,7 +136,7 @@ import 'package:http/http.dart' as http;
 
         return comments.map((json) => CommentModel.fromJson(json)).toList();
       } catch (e) {
-        print("❌ Lỗi load comments: $e");
+        print("Lỗi load comments: $e");
         return [];
       }
     }
@@ -160,7 +160,7 @@ import 'package:http/http.dart' as http;
 
       final pId = ObjectId.fromHexString(postId);
 
-      // 🛑 CHỈ TẠO 1 OBJECT DUY NHẤT VÀ LƯU 1 LẦN
+      // CHỈ TẠO 1 OBJECT DUY NHẤT VÀ LƯU 1 LẦN
       final newComment = {
         "_id": ObjectId(),
         'postId': pId,
@@ -177,7 +177,7 @@ import 'package:http/http.dart' as http;
         'replyToId': replyToId != null ? ObjectId.fromHexString(replyToId) : null,
       };
       
-      // ✅ THỰC HIỆN LƯU VÀO DATABASE (CHỈ 1 DÒNG NÀY)
+      // THỰC HIỆN LƯU VÀO DATABASE (CHỈ 1 DÒNG NÀY)
       await commentCollection.insert(newComment);
 
       // Cập nhật số lượng comment trong bài viết
@@ -188,7 +188,7 @@ import 'package:http/http.dart' as http;
 
       return true;
     } catch (e) {
-      print('❌ CommunityAPI Error (CreateComment): $e');
+      print('CommunityAPI Error (CreateComment): $e');
       return false;
     }
   }
@@ -233,7 +233,7 @@ import 'package:http/http.dart' as http;
       final commentCollection = MongoDatabase.db!.collection('comments');
       final postCollection = MongoDatabase.db!.collection('posts');
 
-      // 🛑 SỬA LỖI ĐỎ: Dùng kiểu nối chuỗi .or() thay vì truyền mảng []
+      // SỬA LỖI ĐỎ: Dùng kiểu nối chuỗi .or() thay vì truyền mảng []
       // Logic: Xóa comment có _id này HOẶC có replyToId này (xóa cả con)
       await commentCollection.remove(
         mongo.where.eq('_id', cId).or(mongo.where.eq('replyToId', cId))
@@ -247,7 +247,7 @@ import 'package:http/http.dart' as http;
 
       return true;
     } catch (e) {
-      print("❌ Lỗi xóa comment: $e");
+      print("Lỗi xóa comment: $e");
       return false;
     }
   }
@@ -282,7 +282,7 @@ import 'package:http/http.dart' as http;
 
       return "SUCCESS";
     } catch (e) {
-      log('❌ CommunityAPI Error: $e');
+      log('CommunityAPI Error: $e');
       return "ERROR";
     }
   }
@@ -320,7 +320,7 @@ import 'package:http/http.dart' as http;
         return postsCursor.map((json) => PostModel.fromJson(json)).toList();
 
       } catch (e) {
-        log('❌ CommunityAPI Error (GetPostsByUser): $e');
+        log('CommunityAPI Error (GetPostsByUser): $e');
         return <PostModel>[];
       }
     }
@@ -338,8 +338,8 @@ import 'package:http/http.dart' as http;
         return result.nRemoved > 0;
 
       } catch (e) {
-        log('❌ CommunityAPI Error (DeletePost): $e');
+        log('CommunityAPI Error (DeletePost): $e');
         return false;
       }
     }
-  } // 🛑 PHẢI CÓ DẤU NGOẶC KẾT THÚC Ở ĐÂY!
+  } // PHẢI CÓ DẤU NGOẶC KẾT THÚC Ở ĐÂY!

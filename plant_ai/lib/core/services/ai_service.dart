@@ -39,9 +39,9 @@ class AiPipelineService {
       _modelSeg = await Interpreter.fromAsset('assets/models/leaf_segmentation_float16.tflite', options: options);
       _modelCls = await Interpreter.fromAsset('assets/models/leaf_Classification_int8.tflite', options: options);
 
-      print("✅ Đã nạp xong Pipeline 3 Lớp TFLite!");
+      print("Đã nạp xong Pipeline 3 Lớp TFLite!");
     } catch (e) {
-      print("⚠️ Lỗi tải mô hình: $e");
+      print("Lỗi tải mô hình: $e");
     }
   }
 
@@ -58,25 +58,25 @@ class AiPipelineService {
       if (originalImage == null) return null;
 
       // --- GIAI ĐOẠN 1: DETECTION ---
-      print("▶️ BẮT ĐẦU GIAI ĐOẠN 1: DETECTION");
+      print("▶BẮT ĐẦU GIAI ĐOẠN 1: DETECTION");
       List<int> bbox = await _runDetection(originalImage); 
       if (bbox.isEmpty) {
-        return {"status": "error", "message": "❌ TỪ CHỐI: AI không tìm thấy lá cây hợp lệ!"};
+        return {"status": "error", "message": "TỪ CHỐI: AI không tìm thấy lá cây hợp lệ!"};
       }
       int x1 = bbox[0], y1 = bbox[1], x2 = bbox[2], y2 = bbox[3];
       img.Image leafCrop = img.copyCrop(originalImage, x: x1, y: y1, width: x2 - x1, height: y2 - y1);
       
       // --- GIAI ĐOẠN 2: SEGMENTATION ---
-      print("▶️ BẮT ĐẦU GIAI ĐOẠN 2: SEGMENTATION");
+      print("▶BẮT ĐẦU GIAI ĐOẠN 2: SEGMENTATION");
       img.Image pureLeaf = await _runSegmentation(leafCrop);
       int leafAreaPixels = _countLeafPixels(pureLeaf);
-      print("🍀 Số pixel lá giữ lại sau tẩy nền: $leafAreaPixels");
+      print("Số pixel lá giữ lại sau tẩy nền: $leafAreaPixels");
 
       // 🚀 CHỐT CHẶN CUỐI CÙNG ĐỂ DIỆT CÁI CỬA GỖ
       // Cửa gỗ hoặc rác sẽ bị bôi đen thành 0 pixel -> Cấm cửa luôn!
       if (leafAreaPixels < 1500) {
-        print("❌ CẢNH BÁO: Rác hoặc Cửa gỗ lọt vào. Đã bị Segmentation tiêu diệt!");
-        return {"status": "error", "message": "❌ TỪ CHỐI: Khung hình không chứa cấu trúc lá cây!"};
+        print("CẢNH BÁO: Rác hoặc Cửa gỗ lọt vào. Đã bị Segmentation tiêu diệt!");
+        return {"status": "error", "message": "TỪ CHỐI: Khung hình không chứa cấu trúc lá cây!"};
       }
 
       // --- GIAI ĐOẠN 3: CLASSIFICATION ---
@@ -89,7 +89,7 @@ class AiPipelineService {
       if (confidence < 0.60 || rawDiseaseName == "CONFUSED") {
         return {
           "status": "error", 
-          "message": "⚠️ TỪ CHỐI:\nKhông thể xác định rõ bệnh.\n(Độ tự tin: ${(confidence * 100).toStringAsFixed(1)}%)"
+          "message": "TỪ CHỐI:\nKhông thể xác định rõ bệnh.\n(Độ tự tin: ${(confidence * 100).toStringAsFixed(1)}%)"
         };
       }
 
@@ -98,7 +98,7 @@ class AiPipelineService {
         "en_name": rawDiseaseName
       };
 
-      print("🏆 CHỐT KẾT QUẢ: ${diseaseTranslated['vi_name']}!");
+      print("CHỐT KẾT QUẢ: ${diseaseTranslated['vi_name']}!");
 
       return {
         "status": "success",
@@ -119,10 +119,10 @@ class AiPipelineService {
   // GIAI ĐOẠN 1: DETECTION (Đã FIX lỗi Type Casting)
   // ==========================================
  Future<List<int>> _runDetection(img.Image inputImage) async {
-    print("🔍 Bắt đầu chạy AI Detection (Chuẩn YOLO Letterbox)...");
+    print("Bắt đầu chạy AI Detection (Chuẩn YOLO Letterbox)...");
     int inputSize = 640; 
 
-    // 🚀 BƯỚC 1: LETTERBOX (Thêm viền xám chống méo hình)
+    // BƯỚC 1: LETTERBOX (Thêm viền xám chống méo hình)
     int wOrg = inputImage.width;
     int hOrg = inputImage.height;
     int maxDim = max(wOrg, hOrg);
@@ -138,7 +138,7 @@ class AiPipelineService {
     // Bây giờ mới resize ảnh vuông hoàn hảo xuống 640x640
     img.Image resizedImage = img.copyResize(squareImg, width: inputSize, height: inputSize);
 
-    // 🚀 BƯỚC 2: TỰ ĐỘNG DÒ MA TRẬN & ÉP KIỂU
+    // BƯỚC 2: TỰ ĐỘNG DÒ MA TRẬN & ÉP KIỂU
     var inputTensor = _modelDet!.getInputTensor(0);
     var inShape = inputTensor.shape;
     bool isNCHW = inShape.length == 4 && inShape[1] == 3; 
@@ -235,11 +235,11 @@ class AiPipelineService {
       }
     }
 
-    print("🧐 Detection tự tin: ${(maxConf * 100).toStringAsFixed(1)}%");
+    print("Detection tự tin: ${(maxConf * 100).toStringAsFixed(1)}%");
 
     if (maxConf < 0.65 || bestBoxIndex == -1) return [];
 
-    // 🚀 BƯỚC A: TRÍCH XUẤT W VÀ H TỪ OUTPUT TRƯỚC (Để tính diện tích)
+    // BƯỚC A: TRÍCH XUẤT W VÀ H TỪ OUTPUT TRƯỚC (Để tính diện tích)
     double wRaw = 0.0, hRaw = 0.0;
     if (outTypeStr.contains('int')) {
         // Trường hợp model Quantization int8
@@ -262,15 +262,15 @@ class AiPipelineService {
     double boxW = wRaw * scaleFactor;
     double boxH = hRaw * scaleFactor;
 
-    // 🚀 BƯỚC B: BÂY GIỜ MỚI TÍNH RATIO (HẾT ĐỎ!)
+    // BƯỚC B: BÂY GIỜ MỚI TÍNH RATIO (HẾT ĐỎ!)
     double boxAreaRatio = (boxW * boxH) / (maxDim * maxDim);
 
     if (boxAreaRatio < 0.10) {
-      print("⚠️ TỪ CHỐI: Vật thể chiếm diện tích quá nhỏ (${ (boxAreaRatio * 100).toStringAsFixed(1) } %), khả năng cao là nhiễu.");
+      print("TỪ CHỐI: Vật thể chiếm diện tích quá nhỏ (${ (boxAreaRatio * 100).toStringAsFixed(1) } %), khả năng cao là nhiễu.");
       return [];
     }
     
-    // 🚀 BƯỚC C: TIẾP TỤC DỊCH CÁC TỌA ĐỘ CÒN LẠI (XC, YC)
+    // BƯỚC C: TIẾP TỤC DỊCH CÁC TỌA ĐỘ CÒN LẠI (XC, YC)
     double xcRaw = 0.0, ycRaw = 0.0;
     if (outTypeStr.contains('int')) {
         xcRaw = (outList[0][bestBoxIndex][0] - outZeroPoint) * outScale;
@@ -338,10 +338,10 @@ class AiPipelineService {
       }
     }
 
-    // 🚀 ĐỘT PHÁ TẠI ĐÂY: Tự động đếm số lượng kênh Output
+    // ĐỘT PHÁ TẠI ĐÂY: Tự động đếm số lượng kênh Output
     var outShape = _modelSeg!.getOutputTensor(0).shape;
     int channels = outShape.last; // Sẽ là 1 hoặc 2 tùy mô hình của ông
-    print("🧠 TFLite Segmentation Channels: $channels");
+    print("TFLite Segmentation Channels: $channels");
 
     Object outputData;
     if (channels == 1) {
@@ -433,7 +433,7 @@ class AiPipelineService {
         for (int y = 0; y < 224; y++) {
           for (int x = 0; x < 224; x++) {
             img.Pixel p = resizedImage.getPixel(x, y);
-            // 🚀 ĐÃ TRẢ LẠI RGB: Red -> Green -> Blue
+            // ĐÃ TRẢ LẠI RGB: Red -> Green -> Blue
             intInput[0][0][y][x] = ((p.r / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
             intInput[0][1][y][x] = ((p.g / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
             intInput[0][2][y][x] = ((p.b / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
@@ -445,7 +445,7 @@ class AiPipelineService {
         for (int y = 0; y < 224; y++) {
           for (int x = 0; x < 224; x++) {
             img.Pixel p = resizedImage.getPixel(x, y);
-            // 🚀 ĐÃ TRẢ LẠI RGB: Red -> Green -> Blue
+            // ĐÃ TRẢ LẠI RGB: Red -> Green -> Blue
             intInput[0][y][x][0] = ((p.r / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
             intInput[0][y][x][1] = ((p.g / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
             intInput[0][y][x][2] = ((p.b / 255.0) / scale + zeroPoint).round().clamp(-128, 127);
@@ -459,7 +459,7 @@ class AiPipelineService {
         for (int y = 0; y < 224; y++) {
           for (int x = 0; x < 224; x++) {
             img.Pixel p = resizedImage.getPixel(x, y);
-            // 🚀 ĐÃ TRẢ LẠI RGB
+            // ĐÃ TRẢ LẠI RGB
             floatInput[0][0][y][x] = p.r / 255.0; 
             floatInput[0][1][y][x] = p.g / 255.0; 
             floatInput[0][2][y][x] = p.b / 255.0; 
@@ -471,7 +471,7 @@ class AiPipelineService {
         for (int y = 0; y < 224; y++) {
           for (int x = 0; x < 224; x++) {
             img.Pixel p = resizedImage.getPixel(x, y);
-            // 🚀 ĐÃ TRẢ LẠI RGB
+            // ĐÃ TRẢ LẠI RGB
             floatInput[0][y][x][0] = p.r / 255.0; 
             floatInput[0][y][x][1] = p.g / 255.0; 
             floatInput[0][y][x][2] = p.b / 255.0; 
@@ -501,7 +501,7 @@ class AiPipelineService {
     double max2 = -1.0;    // Điểm cao thứ nhì (Top 2)
     int maxIndex = -1;
     
-    print("📊 BẢNG ĐIỂM DỰ ĐOÁN TỪ AI (PHÂN TÍCH MARGIN):");
+    print("BẢNG ĐIỂM DỰ ĐOÁN TỪ AI (PHÂN TÍCH MARGIN):");
 
     for (int i = 0; i < 9; i++) {
       double conf = 0.0;
@@ -526,15 +526,15 @@ class AiPipelineService {
       }
     }
 
-    // 🚀 3. THUẬT TOÁN TỪ CHỐI (DIỆT ĐOÁN BỪA)
+    // 3. THUẬT TOÁN TỪ CHỐI (DIỆT ĐOÁN BỪA)
     // Tính khoảng cách giữa 2 lớp dẫn đầu
     double margin = max1 - max2;
-    print("🧐 Khoảng cách tin cậy (Margin): ${(margin * 100).toStringAsFixed(2)}%");
+    print("Khoảng cách tin cậy (Margin): ${(margin * 100).toStringAsFixed(2)}%");
 
     // Nếu khoảng cách quá hẹp (<15%) VÀ điểm cao nhất chưa đủ áp đảo (<80%)
     // Nghĩa là AI đang "lưỡng lự" giữa 2 kết quả -> Từ chối luôn cho an toàn.
     if (margin < 0.15 && max1 < 0.80) {
-       print("⚠️ AI ĐANG ĐOÁN MÒ: Sự chênh lệch giữa các lớp quá thấp.");
+       print("AI ĐANG ĐOÁN MÒ: Sự chênh lệch giữa các lớp quá thấp.");
        return {"label": "CONFUSED", "confidence": max1};
     }
 

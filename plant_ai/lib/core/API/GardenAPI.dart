@@ -10,27 +10,27 @@ class GardenAPI {
     return MongoDatabase.db!.collection("user_gardens");
   }
 
-  // 🚀 Lưu vườn mới
+  //  Lưu vườn mới
   static Future<bool> addGarden(GardenModel garden) async {
     try {
       final collection = await _getCollection();
       await collection.insertOne(garden.toMap());
-      print("✅ GardenAPI: Đã thêm vườn ${garden.name}");
+      print(" GardenAPI: Đã thêm vườn ${garden.name}");
       return true;
     } catch (e) {
-      print("❌ GardenAPI: Lỗi thêm vườn - $e");
+      print(" GardenAPI: Lỗi thêm vườn - $e");
       return false;
     }
   }
 
-  // 🚀 Lấy danh sách vườn của một User
+  //  Lấy danh sách vườn của một User
   static Future<List<GardenModel>> fetchUserGardens(String userId) async {
     try {
       final collection = await _getCollection();
       final results = await collection.find(where.eq('user_id', userId)).toList();
       return results.map((e) => GardenModel.fromMap(e)).toList();
-    } catch (e) {
-      print("❌ GardenAPI: Lỗi lấy danh sách vườn - $e");
+    } catch (e){
+      print("GardenAPI: Lỗi lấy danh sách vườn - $e");
       return [];
     }
   }
@@ -50,7 +50,7 @@ class GardenAPI {
       // 3. Trả về cái tên
       return result?['name']; 
     } catch (e) {
-      print("❌ GardenAPI: Lỗi lấy tên vườn - $e");
+      print(" GardenAPI: Lỗi lấy tên vườn - $e");
       return null;
     }
   }
@@ -64,10 +64,10 @@ class GardenAPI {
           : gardenId;
 
       await collection.remove(where.id(ObjectId.fromHexString(cleanId)));
-      print("🗑️ GardenAPI: Đã xóa vườn $cleanId");
+      print("GardenAPI: Đã xóa vườn $cleanId");
       return true;
     } catch (e) {
-      print("❌ GardenAPI: Lỗi khi xóa vườn - $e");
+      print("GardenAPI: Lỗi khi xóa vườn - $e");
       return false;
     }
   }

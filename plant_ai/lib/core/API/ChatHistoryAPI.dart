@@ -33,7 +33,7 @@ class ChatHistoryAPI {
         return sessionId;
       }
     } catch (e) {
-      print("❌ ChatHistory Error: $e");
+      print("ChatHistory Error: $e");
       return null;
     }
   }
@@ -73,7 +73,7 @@ class ChatHistoryAPI {
       // Trả về true nếu số lượng bản ghi bị xóa lớn hơn 0
       return true; 
     } catch (e) {
-      print("❌ Lỗi xóa chat trực tiếp: $e");
+      print("Lỗi xóa chat trực tiếp: $e");
       return false;
     }
   }

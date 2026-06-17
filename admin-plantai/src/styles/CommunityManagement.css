@@ -1,0 +1,557 @@
+/* ==========================================================================
+   VIEW 1: DANH SÁCH BÀI ĐĂNG CỘNG ĐỒNG (COMMUNITY FEED LIST)
+   ========================================================================== */
+
+.community-mgmt-container {
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 24px;
+    background-color: #f8fafc; /* Nền tổng thể dịu mắt */
+    min-height: 100vh;
+}
+
+/* Bộ điều khiển lọc & tìm kiếm */
+.mgmt-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
+/* Khối chứa thông tin bài đăng trên bảng */
+.post-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Ảnh đính kèm bài viết từ người dùng (Hình 1) */
+.post-thumb-sm {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease;
+}
+.post-thumb-sm:hover {
+    transform: scale(1.05);
+}
+
+/* Nội dung text trích đoạn của bài đăng */
+.post-content-preview {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 14.5px;
+    max-width: 420px;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Số liệu tương tác (Likes, Comments Count) */
+.post-stats-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: inline-flex;
+}
+
+.post-stats-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Nút ghim bài đăng thông báo hệ thống */
+.pin-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.pin-btn:hover { 
+    background: #fffbeb; 
+    border-color: #fde68a;
+    transform: translateY(-1px);
+}
+.pin-btn.pinned { 
+    background: #fef3c7; 
+    border-color: #fcd34d;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+}
+
+/* Tag ngày tháng */
+.publish-date {
+    color: #475569;
+    font-size: 13.5px;
+    font-weight: 600;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+
+/* ==========================================================================
+   VIEW 2: QUẢN LÝ LUỒNG BÌNH LUẬN & PHẢN HỒI LỒNG NHAU (PREMIUM UI)
+   ========================================================================== */
+
+/* Khung bọc toàn bộ danh sách bình luận */
+.comments-moderation-wrapper {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.02);
+    margin-top: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.comment-group-box {
+    margin-bottom: 24px;
+    position: relative;
+}
+/* Tạo đường line dọc nối giữa Comment gốc và Reply */
+.comment-group-box::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 60px;
+    bottom: 20px;
+    width: 2px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    z-index: 0;
+}
+.comment-group-box:last-child {
+    margin-bottom: 0;
+}
+
+/* ================= AVATAR GIẢ LẬP ================= */
+.comment-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #166534;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+    z-index: 1;
+}
+.reply-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    z-index: 1;
+}
+
+/* ================= KHỐI BÌNH LUẬN GỐC ================= */
+.comment-main-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+.comment-main-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+}
+
+/* ================= KHỐI PHẢN HỒI (REPLY) ================= */
+.comment-reply-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-left: 56px; /* Lùi vào nhường chỗ cho đường kẻ dọc */
+    margin-top: 16px;
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+.comment-reply-item:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+/* ================= TEXT & BONG BÓNG CHAT ================= */
+.comment-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.comment-author {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 15px;
+}
+.comment-time {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Bong bóng chat chuẩn Apple iMessage / Facebook */
+.comment-text {
+    color: #1e293b;
+    font-size: 15px;
+    line-height: 1.6;
+    background: #f8fafc;
+    padding: 14px 18px;
+    border-radius: 0 16px 16px 16px; /* Bo góc kiểu bong bóng */
+    border: 1px solid #f1f5f9;
+    display: inline-block;
+    max-width: 95%;
+}
+.reply-text {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+/* ================= NÚT XÓA BÌNH LUẬN CAO CẤP ================= */
+.icon-btn.delete-comment {
+    background: #fff0f2;
+    color: #ef4444;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #ffe4e6;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.icon-btn.delete-comment:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+
+/* ==========================================================================
+   VIEW 3: EDITOR - GIAO DIỆN ĐĂNG BÀI BQT (CAO CẤP)
+   ========================================================================== */
+
+.community-editor-container {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    height: calc(100vh - 80px); 
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: #f8fafc;
+}
+
+/* Cấu trúc Khung Tiêu đề / Điều hướng chung */
+.editor-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 24px 32px; 
+    background: white; 
+    border-bottom: 1px solid #e2e8f0; 
+    border-radius: 16px 16px 0 0; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    z-index: 10;
+}
+.editor-header-left { 
+    display: flex; 
+    align-items: center; 
+    gap: 24px; 
+}
+
+/* Nút Back */
+.btn-back-editor { 
+    background: #f1f5f9; 
+    border: 1px solid #e2e8f0; 
+    width: 44px; 
+    height: 44px; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #475569; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+}
+.btn-back-editor:hover { 
+    background: white;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transform: translateX(-2px);
+}
+
+.editor-header-left h3 { 
+    margin: 0 0 6px 0; 
+    font-size: 20px; 
+    font-weight: 700;
+    color: #0f172a; 
+    letter-spacing: -0.5px;
+}
+.editor-header-left span { 
+    color: #64748b; 
+    font-size: 13.5px; 
+    font-weight: 500;
+}
+
+/* Nút Đăng bài BQT */
+.btn-save-primary { 
+    background: #90A955; /* Màu chuẩn PlantAI */
+    color: white; 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 12px; 
+    font-size: 14.5px;
+    font-weight: 600; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(144, 169, 85, 0.3);
+}
+.btn-save-primary:hover {
+    background: #7a9147;
+    box-shadow: 0 6px 16px rgba(144, 169, 85, 0.4);
+    transform: translateY(-2px);
+}
+
+.editor-layout-grid { 
+    display: flex; 
+    flex: 1; 
+    background: white; 
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    overflow: hidden; 
+}
+.editor-sidebar { 
+    width: 100%; 
+    padding: 40px; 
+    overflow-y: auto; 
+}
+
+.form-group { margin-bottom: 28px; }
+.form-group label { 
+    display: block; 
+    font-size: 14px; 
+    font-weight: 700; 
+    color: #1e293b; 
+    margin-bottom: 10px; 
+}
+
+/* Form nhập liệu nội dung (Textarea cực mịn) */
+.admin-post-textarea {
+    width: 100%;
+    padding: 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #1e293b;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+.admin-post-textarea:focus {
+    background: #ffffff;
+    border-color: #90A955;
+    box-shadow: 0 0 0 4px rgba(144, 169, 85, 0.15);
+}
+
+/* Khung kéo thả hình ảnh đính kèm mạng xã hội */
+.image-upload-box { 
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px; 
+    height: 200px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    background: #f8fafc; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+}
+.image-upload-box:hover {
+    border-color: #90A955;
+    background: #f0fdf4;
+}
+.image-upload-box p { 
+    margin-top: 14px; 
+    font-size: 14px;
+    font-weight: 500; 
+    color: #64748b; 
+}
+.thumbnail-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+}
+
+/* Keyframes dùng cho hiệu ứng chuyển động mượt mà */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ==========================================================================
+   VIEW 4: MODAL POPUP XEM CHI TIẾT BÀI ĐĂNG
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.post-detail-modal {
+    background: #ffffff;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.btn-close-modal {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-close-modal:hover {
+    background: #e2e8f0;
+    color: #ef4444;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.detail-author-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.detail-author-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.detail-time {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.detail-text {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: #334155;
+    margin-bottom: 24px;
+    white-space: pre-wrap; /* Giữ nguyên định dạng xuống hàng của người dùng */
+}
+
+.detail-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.detail-stats {
+    display: flex;
+    gap: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+.detail-stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

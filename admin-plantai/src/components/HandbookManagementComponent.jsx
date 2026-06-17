@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { 
-  Search, Plus, Edit, Trash2, Eye, EyeOff, ArrowLeft, Save, Image as ImageIcon,
-  Bold, Italic, Underline, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, Link,
-  Pin, MessageSquareWarning, ChevronDown, Check, FileText
+  Search, Plus, Edit, Trash2, Eye, EyeOff, ArrowLeft, Save, 
+  Image as ImageIcon, ChevronDown, Check, FileText, LayoutList, Pin 
 } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/HandbookManagement.css";
-
 
 const API_URL = "http://127.0.0.1:3000/api";
 
@@ -20,33 +18,25 @@ const HandbookManagement = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isOpenFilter, setIsOpenFilter] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  // Biến dành cho việc viết bài
+  
+  // Biến thông tin cơ bản
   const [title, setTitle] = useState("");
-  const [isFontFamilyOpen, setIsFontFamilyOpen] = useState(false);
-  const [isFontSizeOpen, setIsFontSizeOpen] = useState(false);
-  const [currentFont, setCurrentFont] = useState("Roboto");
-  const [currentSizeLabel, setCurrentSizeLabel] = useState("16pt (Bình thường)");
-
-  // Biến phân loại và xử lý ảnh
   const [category, setCategory] = useState("");
   const [summary, setSummary] = useState("");
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [isDragging, setIsDragging] = useState(false);
 
-  // Biến xử lý đầu vào va chỉnh sửa bài
+  // ========================================================
+  // STATE CHO CẤU TRÚC JSON CỦA FLUTTER (THAY THẾ HTML EDITOR)
+  // ========================================================
+  const [introData, setIntroData] = useState("");
+  const [sectionsData, setSectionsData] = useState([]);
+  const [tipsData, setTipsData] = useState(""); // Chứa text thô, mỗi dòng là 1 mẹo
+
   const fileInputRef = useRef(null);
-  const editorRef = useRef(null);
   const suggestions = handbooks
     .filter(h => h.title.toLowerCase().includes(searchTerm.toLowerCase()) && searchTerm.length > 0)
     .slice(0, 5);
-
-  // BIẾN KIỂU DỮ LIỆU ĐẦU VÀO CỦA BÀI VIẾT
-  // State theo dõi nút nào đang sáng (Active)
-  const [activeFormats, setActiveFormats] = useState({
-    bold: false, italic: false, underline: false,
-    justifyLeft: false, justifyCenter: false, justifyRight: false,
-    insertUnorderedList: false, insertOrderedList: false
-  });
 
   const categoryOptions = [
     { id: 'Tất cả', label: 'Tất cả danh mục', color: '#64748b' },
@@ -56,19 +46,6 @@ const HandbookManagement = () => {
     { id: 'Mẹo nhà nông', label: 'Mẹo nhà nông', color: '#3b82f6' }
   ];
 
-  const checkFormatState = () => {
-    setActiveFormats({
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline'),
-      justifyLeft: document.queryCommandState('justifyLeft'),
-      justifyCenter: document.queryCommandState('justifyCenter'),
-      justifyRight: document.queryCommandState('justifyRight'),
-      insertUnorderedList: document.queryCommandState('insertUnorderedList'),
-      insertOrderedList: document.queryCommandState('insertOrderedList'),
-    });
-  };
-
   const fetchHandbooks = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -76,21 +53,17 @@ const HandbookManagement = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.status === "success") {
-        setHandbooks(res.data.data); // Đổ data thật vào bảng
+        setHandbooks(res.data.data); 
       }
     } catch (error) {
       console.error("Lỗi tải danh sách cẩm nang:", error);
     }
   };
 
-  // Tự động chạy ngay khi vừa mở trang Cẩm nang
-  useEffect(() => {
-    fetchHandbooks();
-  }, []);
+  useEffect(() => { fetchHandbooks(); }, []);
 
   const categories = ["Tất cả", "Phòng trừ bệnh", "Kỹ thuật canh tác", "Nhận diện sâu bệnh", "Mẹo nhà nông"];
 
-  // --- CÁC HÀM XỬ LÝ ---
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -101,62 +74,101 @@ const HandbookManagement = () => {
   };
 
   const handleThumbnailClick = () => fileInputRef.current?.click();
-
   const handleThumbnailChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       const base64Str = await convertToBase64(file);
       setThumbnailPreview(base64Str);
     }
-
     e.target.value = "";
   };
-
-  const handleFormat = (command, value = null) => {
-    document.execCommand(command, false, value);
-    if (editorRef.current) editorRef.current.focus(); // Giữ focus lại vào ô soạn thảo
-  };
-
   const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
   const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false); };
   const handleDrop = async (e) => {
-  e.preventDefault();
-  setIsDragging(false);
-  const file = e.dataTransfer.files?.[0];
-  if (file && file.type.startsWith('image/')) {
-    const base64Str = await convertToBase64(file);
-    setThumbnailPreview(base64Str);
-  }
-};
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const base64Str = await convertToBase64(file);
+      setThumbnailPreview(base64Str);
+    }
+  };
 
   // ==========================================
-  // HÀM LƯU BÀI VIẾT VÀO DATABASE BẰNG API
+  // LOGIC XỬ LÝ CÁC KHỐI NHẬP LIỆU
   // ==========================================
+  const addSection = () => {
+    setSectionsData([...sectionsData, { sectionTitle: "", diseases: [] }]);
+  };
 
+  const removeSection = (sIdx) => {
+    const newSecs = [...sectionsData];
+    newSecs.splice(sIdx, 1);
+    setSectionsData(newSecs);
+  };
+
+  const updateSectionTitle = (sIdx, value) => {
+    const newSecs = [...sectionsData];
+    newSecs[sIdx].sectionTitle = value;
+    setSectionsData(newSecs);
+  };
+
+  const addDisease = (sIdx) => {
+    const newSecs = [...sectionsData];
+    newSecs[sIdx].diseases.push({ diseaseName: "", lines: "" });
+    setSectionsData(newSecs);
+  };
+
+  const removeDisease = (sIdx, dIdx) => {
+    const newSecs = [...sectionsData];
+    newSecs[sIdx].diseases.splice(dIdx, 1);
+    setSectionsData(newSecs);
+  };
+
+  const updateDisease = (sIdx, dIdx, field, value) => {
+    const newSecs = [...sectionsData];
+    newSecs[sIdx].diseases[dIdx][field] = value;
+    setSectionsData(newSecs);
+  };
+
+  // ==========================================
+  // LƯU DỮ LIỆU & ĐÓNG GÓI THÀNH JSON
+  // ==========================================
   const handleSave = async () => {
     try {
-      // 1. Kiểm tra dữ liệu (Validation)
-      if (!title.trim()) { alert(" !LỖI: Vui lòng nhập tiêu đề bài viết!"); return; }
-      if (!category) { alert(" !LỖI: Vui lòng chọn chủ đề!"); return; }
+      if (!title.trim()) { alert("❗ LỖI: Vui lòng nhập tiêu đề bài viết!"); return; }
+      if (!category) { alert("❗ LỖI: Vui lòng chọn chủ đề!"); return; }
 
-      // 2. Lấy HTML từ ô soạn thảo Rich Text
-      const editorContent = editorRef.current?.innerHTML || "";
+      // Chuyển đổi text thô thành array dựa trên dấu xuống hàng (enter)
+      const formattedSections = sectionsData.map(sec => ({
+          sectionTitle: sec.sectionTitle,
+          diseases: sec.diseases.map(dis => ({
+              diseaseName: dis.diseaseName,
+              lines: dis.lines.split('\n').filter(l => l.trim() !== '') // Tách mỗi dòng thành 1 ý
+          }))
+      }));
 
-      // 3. Đóng gói dữ liệu để gửi đi
+      const tipsArray = tipsData.split('\n').filter(t => t.trim() !== '');
+
+      // Đóng gói cấu trúc chuẩn JSON
+      const flutterContentData = {
+          intro: introData,
+          sections: formattedSections,
+          tips: tipsArray
+      };
+
       const payload = {
-        id: editingPost?.id, 
+        id: editingPost?._id || editingPost?.id, 
         title: title,
         category: category,
         summary: summary,
-        content: editorContent,
+        content: JSON.stringify(flutterContentData), // Stringify để lưu vào DB
         image: thumbnailPreview,
-        status: "Visible",
+        status: editingPost?.status || "Visible",
         isPinned: editingPost?.isPinned || false
       };
 
       const token = localStorage.getItem("token");
-      
-      // 4. Bắn API lưu dữ liệu
       const res = await axios.post(`${API_URL}/handbook/save`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -166,11 +178,9 @@ const HandbookManagement = () => {
         setCurrentView('list');
         fetchHandbooks();
       }
-      
     } catch (error) {
       console.error("Lỗi:", error);
-      const errorMsg = error.response?.data?.message || "Lỗi máy chủ";
-      alert(` Lưu thất bại: ${errorMsg}`);
+      alert("Lưu thất bại: Lỗi máy chủ");
     }
   };
 
@@ -180,38 +190,80 @@ const HandbookManagement = () => {
     setCategory(post.category);
     setSummary(post.summary || "");
     setThumbnailPreview(post.image || "");
+
+    // Cố gắng Parse JSON từ Database để đổ ngược vào Form
+    try {
+        const parsed = JSON.parse(post.content);
+        setIntroData(parsed.intro || "");
+        setTipsData(parsed.tips ? parsed.tips.join('\n') : "");
+        
+        // Chuyển mảng lines về lại chuỗi thô để dễ đưa vào Textarea
+        const secData = (parsed.sections || []).map(s => ({
+            sectionTitle: s.sectionTitle,
+            diseases: (s.diseases || []).map(d => ({
+                diseaseName: d.diseaseName,
+                lines: (d.lines || []).join('\n')
+            }))
+        }));
+        setSectionsData(secData);
+    } catch (e) {
+        // Nếu bài cũ bị lỗi cấu trúc, xóa trắng form
+        setIntroData("");
+        setTipsData("");
+        setSectionsData([]);
+    }
+
     setCurrentView('editor');
   };
-
-  // 👉 THÊM CÁI NÀY VÀO DƯỚI HÀM handleEdit:
-  // Vì cái thẻ div soạn thảo nó render chậm hơn state, 
-  // nên phải dùng useEffect để đút nội dung HTML vào sau khi nó đã hiện ra
-  useEffect(() => {
-    if (currentView === 'editor' && editorRef.current) {
-      editorRef.current.innerHTML = editingPost ? editingPost.content : "";
-    }
-  }, [currentView, editingPost]);
   
   const handleAddNew = () => {
-    // Xóa sạch form cũ khi tạo bài mới
     setEditingPost(null);
     setTitle("");
     setCategory("");
     setSummary("");
     setThumbnailPreview("");
-    if(editorRef.current) editorRef.current.innerHTML = "";
+    setIntroData("");
+    setSectionsData([]);
+    setTipsData("");
     setCurrentView('editor');
   };
 
-  const handleToggleVisibility = (id) => {
-    setHandbooks(handbooks.map(h => h.id === id ? { ...h, status: h.status === 'Visible' ? 'Hidden' : 'Visible' } : h));
+  const handleDelete = async (postId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa bài cẩm nang này vĩnh viễn không?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.delete(`${API_URL}/handbook/delete/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.status === "success") {
+        fetchHandbooks();
+      }
+    } catch (error) { alert("Lỗi khi xóa!"); }
   };
 
-  const handleTogglePin = (id) => {
-    setHandbooks(handbooks.map(h => h.id === id ? { ...h, isPinned: !h.isPinned } : h));
+  const handleToggleVisibility = async (post) => {
+    const nextStatus = post.status === 'Visible' ? 'Hidden' : 'Visible';
+    setHandbooks(handbooks.map(h => (h._id || h.id) === (post._id || post.id) ? { ...h, status: nextStatus } : h));
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`${API_URL}/handbook/save`, { ...post, id: post._id || post.id, status: nextStatus }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) { console.error("Lỗi"); }
   };
 
-  // Lọc dữ liệu kết hợp Tìm kiếm & Danh mục
+  const handleTogglePin = async (post) => {
+    const nextPin = !post.isPinned;
+    setHandbooks(handbooks.map(h => (h._id || h.id) === (post._id || post.id) ? { ...h, isPinned: nextPin } : h));
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`${API_URL}/handbook/save`, { ...post, id: post._id || post.id, isPinned: nextPin }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchHandbooks(); 
+    } catch (error) { console.error("Lỗi"); }
+  };
+
   const filteredHandbooks = handbooks.filter(h => {
     const matchSearch = h.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = selectedCategory === "" || selectedCategory === "Tất cả" || h.category === selectedCategory;
@@ -219,7 +271,7 @@ const HandbookManagement = () => {
   });
 
   // ==========================================
-  // VIEW 1: MÀN HÌNH DANH SÁCH (LIST VIEW)
+  // VIEW 1: MÀN HÌNH DANH SÁCH 
   // ==========================================
   if (currentView === 'list') {
     return (
@@ -234,11 +286,7 @@ const HandbookManagement = () => {
           </button>
         </div>
 
-
-        {/* THANH TÌM KIẾM & BỘ LỌC ĐỒNG BỘ UI */}
         <div className="mgmt-controls" style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '24px' }}>
-          
-          {/* KHUNG SEARCH MƯỢT MÀ */}
           <div className="search-wrapper" style={{ width: '100%', position: 'relative' }}>
             <div className="search-box-modern" style={{ width: '97%', }}>
               <Search size={18} />
@@ -253,18 +301,12 @@ const HandbookManagement = () => {
             </div>
             <AnimatePresence>
               {showSuggestions && suggestions.length > 0 && (
-                <motion.ul 
-                  className="search-suggestions"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
+                <motion.ul className="search-suggestions" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                   {suggestions.map(s => (
-                    <li key={s.id} onClick={() => {setSearchTerm(s.title); setShowSuggestions(false);}}>
-                      <FileText size={14} color="#64748b" /> {/* Đổi icon User thành icon Bài viết */}
+                    <li key={s._id || s.id} onClick={() => {setSearchTerm(s.title); setShowSuggestions(false);}}>
+                      <FileText size={14} color="#64748b" /> 
                       <div className="sugg-info">
                         <span className="sugg-name">{s.title}</span>
-                        {/* Dùng luôn class sugg-email để hiện tên Danh mục cho lẹ, css giống nhau */}
                         <span className="sugg-email">{s.category}</span> 
                       </div>
                     </li>
@@ -274,29 +316,17 @@ const HandbookManagement = () => {
             </AnimatePresence>
           </div>
 
-          {/* CUSTOM CATEGORY DROPDOWN */}
           <div className="custom-filter" style={{ position: 'relative', minWidth: '200px' }}>
             <button className="filter-trigger" onClick={() => setIsOpenFilter(!isOpenFilter)}>
-              <div className="filter-dot" style={{ 
-                background: categoryOptions.find(o => o.id === (selectedCategory || 'Tất cả'))?.color || '#64748b' 
-              }}></div>
+              <div className="filter-dot" style={{ background: categoryOptions.find(o => o.id === (selectedCategory || 'Tất cả'))?.color || '#64748b' }}></div>
               <span>{selectedCategory === "" || selectedCategory === "Tất cả" ? "Tất cả danh mục" : selectedCategory}</span>
               <ChevronDown size={16} className={isOpenFilter ? 'rotate' : ''} />
             </button>
-
             <AnimatePresence>
               {isOpenFilter && (
-                <motion.ul 
-                  className="filter-dropdown"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                >
+                <motion.ul className="filter-dropdown" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
                   {categoryOptions.map(opt => (
-                    <li key={opt.id} onClick={() => {
-                        setSelectedCategory(opt.id);
-                        setIsOpenFilter(false);
-                    }}>
+                    <li key={opt.id} onClick={() => { setSelectedCategory(opt.id); setIsOpenFilter(false); }}>
                       <div className="dot" style={{ background: opt.color }}></div>
                       {opt.label}
                       {(selectedCategory === opt.id || (selectedCategory === "" && opt.id === "Tất cả")) && <Check size={14} className="check-icon" />}
@@ -312,7 +342,7 @@ const HandbookManagement = () => {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: '40px' }}></th> {/* Cột ghim */}
+                <th style={{ width: '40px' }}></th> 
                 <th>Bài viết cẩm nang</th>
                 <th>Chủ đề</th>
                 <th>Ngày đăng</th>
@@ -322,13 +352,9 @@ const HandbookManagement = () => {
             </thead>
             <tbody>
               {filteredHandbooks.map((post) => (
-                <tr key={post.id} className={post.status === 'Hidden' ? 'row-dimmed' : ''}>
+                <tr key={post._id || post.id} className={post.status === 'Hidden' ? 'row-dimmed' : ''}>
                   <td>
-                    <button 
-                      className={`icon-btn pin-btn ${post.isPinned ? 'pinned' : ''}`}
-                      onClick={() => handleTogglePin(post.id)}
-                      title={post.isPinned ? "Bỏ ghim" : "Ghim lên đầu"}
-                    >
+                    <button className={`icon-btn pin-btn ${post.isPinned ? 'pinned' : ''}`} onClick={() => handleTogglePin(post)} title={post.isPinned ? "Bỏ ghim" : "Ghim lên đầu"}>
                       <Pin size={18} fill={post.isPinned ? "#f59e0b" : "none"} color={post.isPinned ? "#f59e0b" : "#94a3b8"} />
                     </button>
                   </td>
@@ -337,24 +363,24 @@ const HandbookManagement = () => {
                       <img src={post.image} alt="thumb" className="handbook-thumb-sm" />
                       <div>
                         <div className="handbook-title">{post.title}</div>
-                        <div className="handbook-stats">{post.views} lượt xem</div>
+                        <div className="handbook-stats">{post.views || 0} lượt xem</div>
                       </div>
                     </div>
                   </td>
                   <td><span className="category-tag">{post.category}</span></td>
                   <td><span className="publish-date">{post.publishDate}</span></td>
                   <td>
-                    <span className={`status-badge ${post.status.toLowerCase()}`}>
+                    <span className={`status-badge ${(post.status || 'Visible').toLowerCase()}`}>
                       {post.status === 'Visible' ? 'Đang Hiển Thị' : 'Đang Ẩn'}
                     </span>
                   </td>
                   <td>
                     <div className="action-buttons" style={{ justifyContent: 'flex-end' }}>
-                      <button className="icon-btn toggle-eye" onClick={() => handleToggleVisibility(post.id)}>
+                      <button className="icon-btn toggle-eye" onClick={() => handleToggleVisibility(post)}>
                         {post.status === 'Visible' ? <Eye size={18} /> : <EyeOff size={18} />}
                       </button>
                       <button className="icon-btn edit" onClick={() => handleEdit(post)}><Edit size={18} /></button>
-                      <button className="icon-btn delete"><Trash2 size={18} /></button> {/* CN.097 */}
+                      <button className="icon-btn delete" onClick={() => handleDelete(post._id || post.id)}><Trash2 size={18} /></button>
                     </div>
                   </td>
                 </tr>
@@ -367,7 +393,7 @@ const HandbookManagement = () => {
   }
 
   // ==========================================
-  // VIEW 2: MÀN HÌNH SOẠN THẢO (EDITOR VIEW)
+  // VIEW 2: FORM XÂY DỰNG NỘI DUNG (APP BUILDER)
   // ==========================================
   return (
     <div className="handbook-editor-container">
@@ -383,168 +409,91 @@ const HandbookManagement = () => {
       </div>
 
       <div className="editor-layout-grid">
-        {/* Cột Trái: Cấu hình bài viết */}
-        <div className="editor-sidebar">
+        {/* CỘT TRÁI: CẤU HÌNH CƠ BẢN */}
+        <div className="editor-sidebar" style={{ width: '380px' }}>
           <div className="form-group">
             <label>Ảnh đại diện bài viết</label>
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleThumbnailChange} />
-            <div 
-                className={`image-upload-box ${isDragging ? 'dragging' : ''}`} 
-                onClick={handleThumbnailClick}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                >
-                  {thumbnailPreview ? (
-                  <img src={thumbnailPreview} alt="Thumbnail preview" className="thumbnail-preview-img" />
-                  ) : (
+            <div className={`image-upload-box ${isDragging ? 'dragging' : ''}`} onClick={handleThumbnailClick} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+                  {thumbnailPreview ? <img src={thumbnailPreview} alt="Preview" className="thumbnail-preview-img" /> : (
                     <>
                       <ImageIcon size={32} color={isDragging ? "#90A955" : "#cbd5e1"} />
-                      <p>{isDragging ? "Thả ảnh vào đây..." : "Kéo thả hoặc click để tải ảnh lên"}</p>
-                      </>
+                      <p>Click hoặc kéo thả để tải ảnh lên</p>
+                    </>
                   )}
               </div>
           </div>
           <div className="form-group">
             <label>Tiêu đề bài viết</label>
-            <textarea 
-              className="form-input title-input" 
-              rows="3" 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              placeholder="VD: Bí quyết phòng bệnh mùa mưa..." 
-            />
+            <textarea className="form-input title-input" rows="3" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="VD: Bí quyết phòng bệnh mùa mưa..." />
           </div>
           <div className="form-group">
             <label>Chủ đề (Danh mục)</label>
-            <select 
-              className="form-input" 
-              value={category} 
-              onChange={(e) => setCategory(e.target.value)}
-            >
+            <select className="form-input" value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="" disabled>Chọn chủ đề...</option>
               {categories.slice(1).map((cat, i) => <option key={i} value={cat}>{cat}</option>)}
             </select>
           </div>
           <div className="form-group">
             <label>Tóm tắt ngắn (Mô tả)</label>
-            <textarea 
-              className="form-input" 
-              rows="4" 
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Nhập đoạn mô tả ngắn hiển thị dưới tiêu đề..."
-            ></textarea>
+            <textarea className="form-input" rows="4" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Nhập đoạn mô tả ngắn hiển thị dưới tiêu đề..."></textarea>
           </div>
         </div>
 
-        {/* Cột Phải: Word-like Editor */}
-        <div className="editor-main-workspace">
-          <div className="word-editor-wrapper">
-            <div className="word-toolbar">
-              {/* DROPDOWN FONT XỊN XÒ */}
-              <div className="custom-toolbar-select">
-                <div className="select-trigger-mini" onClick={() => setIsFontFamilyOpen(!isFontFamilyOpen)}>
-                  <span>{currentFont}</span> <ChevronDown size={14} className={`chevron ${isFontFamilyOpen ? 'open' : ''}`}/>
-                </div>
-                {isFontFamilyOpen && (
-                  <div className="select-dropdown-menu-mini">
-                    {['Roboto', 'Arial', 'Times New Roman'].map(font => (
-                      <div key={font} className="select-option-mini" onClick={() => {
-                        setCurrentFont(font);
-                        handleFormat('fontName', font);
-                        setIsFontFamilyOpen(false);
-                      }}>
-                        <span style={{ fontFamily: font }}>{font}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+        {/* CỘT PHẢI: FORM DỰNG CẤU TRÚC (APP BUILDER) */}
+        <div className="editor-main-workspace" style={{ background: '#f8fafc', padding: '30px' }}>
+          <div style={{ background: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
+             <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', color: '#1e293b' }}>
+                 <LayoutList size={20} color="#90A955" /> Cấu trúc nội dung hiển thị trên App
+             </h4>
 
-              {/* DROPDOWN SIZE XỊN XÒ */}
-              <div className="custom-toolbar-select">
-                <div className="select-trigger-mini" onClick={() => setIsFontSizeOpen(!isFontSizeOpen)}>
-                  <span>{currentSizeLabel}</span> <ChevronDown size={14} className={`chevron ${isFontSizeOpen ? 'open' : ''}`}/>
-                </div>
-                {isFontSizeOpen && (
-                  <div className="select-dropdown-menu-mini">
-                    {[
-                      { label: '14pt (Nhỏ)', value: '2' }, 
-                      { label: '16pt (Bình thường)', value: '3' }, 
-                      { label: '18pt (Tiêu đề 2)', value: '4' }, 
-                      { label: '24pt (Tiêu đề 1)', value: '5' }
-                    ].map(size => (
-                      <div key={size.label} className="select-option-mini" onClick={() => {
-                        setCurrentSizeLabel(size.label);
-                        handleFormat('fontSize', size.value);
-                        setIsFontSizeOpen(false);
-                      }}>{size.label}</div>
-                    ))}
-                  </div>
-                )}
-              </div>
+             {/* INTRO */}
+             <div className="form-group">
+                <label>1. Đoạn giới thiệu chung</label>
+                <textarea className="form-input" rows="3" value={introData} onChange={(e) => setIntroData(e.target.value)} placeholder="Mùa mưa là thời điểm các loại nấm phát triển..." />
+             </div>
 
-              <div className="toolbar-divider"></div>
+             <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '24px 0' }}/>
 
-              {/* NÚT ĐỊNH DẠNG CHỮ */}
-              <div className="toolbar-group">
-                <button 
-                  className={`toolbar-btn ${activeFormats.bold ? 'active' : ''}`} 
-                  onMouseDown={(e) => e.preventDefault()} // 👉 THÊM DÒNG NÀY CHỐNG MẤT FOCUS
-                  onClick={() => handleFormat('bold')} 
-                  title="In đậm"
-                ><Bold size={16} /></button>
+             {/* SECTIONS */}
+             <div className="form-group">
+                <label>2. Các phần nội dung (VD: 1. Phòng bệnh cho cây lúa)</label>
+                {sectionsData.map((sec, sIdx) => (
+                    <div key={sIdx} style={{ background: '#f1f5f9', padding: '16px', borderRadius: '12px', marginBottom: '16px', border: '1px solid #cbd5e1' }}>
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                            <input className="form-input" value={sec.sectionTitle} onChange={(e) => updateSectionTitle(sIdx, e.target.value)} placeholder="Nhập Tiêu đề Phần (VD: 1. Phòng bệnh cho lúa)" style={{ fontWeight: 'bold' }} />
+                            <button className="icon-btn delete" onClick={() => removeSection(sIdx)} style={{ background: '#fee2e2' }}><Trash2 size={18} color="#ef4444"/></button>
+                        </div>
+
+                        {sec.diseases.map((dis, dIdx) => (
+                            <div key={dIdx} style={{ background: '#ffffff', padding: '16px', borderRadius: '8px', marginLeft: '20px', marginBottom: '12px', border: '1px solid #e2e8f0' }}>
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+                                    <input className="form-input" value={dis.diseaseName} onChange={(e) => updateDisease(sIdx, dIdx, 'diseaseName', e.target.value)} placeholder="Tên bệnh/Sâu hại (VD: Bệnh đạo ôn)" style={{ color: '#8DAA5B', fontWeight: 'bold' }} />
+                                    <button className="icon-btn delete" onClick={() => removeDisease(sIdx, dIdx)}><Trash2 size={16}/></button>
+                                </div>
+                                <textarea className="form-input" rows="3" value={dis.lines} onChange={(e) => updateDisease(sIdx, dIdx, 'lines', e.target.value)} placeholder="Nhập các biện pháp (Mỗi biện pháp nhấn Enter xuống 1 dòng)" />
+                            </div>
+                        ))}
+
+                        <button onClick={() => addDisease(sIdx)} className="btn-add-primary" style={{ marginLeft: '20px', background: '#ffffff', color: '#475569', border: '1px dashed #cbd5e1' }}>
+                            + Thêm Mối đe dọa (Sâu/Bệnh)
+                        </button>
+                    </div>
+                ))}
                 
-                <button 
-                  className={`toolbar-btn ${activeFormats.italic ? 'active' : ''}`} 
-                  onMouseDown={(e) => e.preventDefault()} // 👉 THÊM VÀO ĐÂY NỮA
-                  onClick={() => handleFormat('italic')} 
-                  title="In nghiêng"
-                ><Italic size={16} /></button>
-                
-                <button 
-                  className={`toolbar-btn ${activeFormats.underline ? 'active' : ''}`} 
-                  onMouseDown={(e) => e.preventDefault()} // 👉 VÀ ĐÂY NỮA
-                  onClick={() => handleFormat('underline')} 
-                  title="Gạch chân"
-                ><Underline size={16} /></button>
-              </div>
-
-              <div className="toolbar-divider"></div>
-
-              {/* NÚT CĂN LỀ */}
-              <div className="toolbar-group">
-                <button className={`toolbar-btn ${activeFormats.justifyLeft ? 'active' : ''}`} onClick={() => handleFormat('justifyLeft')} title="Căn trái"><AlignLeft size={16} /></button>
-                <button className={`toolbar-btn ${activeFormats.justifyCenter ? 'active' : ''}`} onClick={() => handleFormat('justifyCenter')} title="Căn giữa"><AlignCenter size={16} /></button>
-                <button className={`toolbar-btn ${activeFormats.justifyRight ? 'active' : ''}`} onClick={() => handleFormat('justifyRight')} title="Căn phải"><AlignRight size={16} /></button>
-              </div>
-
-              <div className="toolbar-divider"></div>
-
-              {/* DANH SÁCH & TIỆN ÍCH */}
-              <div className="toolbar-group">
-                <button className={`toolbar-btn ${activeFormats.insertUnorderedList ? 'active' : ''}`} onClick={() => handleFormat('insertUnorderedList')}><List size={16} /></button>
-                <button className={`toolbar-btn ${activeFormats.insertOrderedList ? 'active' : ''}`} onClick={() => handleFormat('insertOrderedList')}><ListOrdered size={16} /></button>
-                <button className="toolbar-btn" title="Chèn Link"><Link size={16} /></button>
-                <button className="toolbar-btn" title="Chèn Ảnh"><ImageIcon size={16} /></button>
-                <button className="toolbar-btn tip-btn" title="Chèn Box Mẹo PlantAI">
-                  <MessageSquareWarning size={16} color="#90A955" />
+                <button onClick={addSection} className="btn-save-primary" style={{ width: '100%', justifyContent: 'center', background: '#94a3b8' }}>
+                    + Thêm Phần Nội Dung Mới
                 </button>
-              </div>
-            </div>
+             </div>
 
-            <div className="word-canvas">
-              <div 
-                ref={editorRef}
-                contentEditable="true"
-                className="rich-text-area" 
-                onKeyUp={checkFormatState}   
-                onMouseUp={checkFormatState} 
-                placeholder="Bắt đầu viết nội dung cẩm nang của bạn tại đây... (Bôi đen chữ để dùng định dạng)"
-                style={{ outline: 'none', minHeight: '400px' }}
-              ></div>
-            </div>
+             <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '24px 0' }}/>
+
+             {/* TIPS */}
+             <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ color: '#f59e0b' }}>3. Khung Mẹo từ PlantAI</label>
+                <textarea className="form-input" rows="4" value={tipsData} onChange={(e) => setTipsData(e.target.value)} placeholder="Nhập các mẹo (Mỗi mẹo nhấn Enter xuống 1 dòng)" />
+             </div>
+
           </div>
         </div>
       </div>

@@ -1,2 +1,4 @@
 .env
-venv/
+.env*
+*.rar
+plant_ai.rar

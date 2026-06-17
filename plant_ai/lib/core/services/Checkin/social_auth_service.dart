@@ -15,7 +15,7 @@ class SocialAuthService {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser != null) {
-        log("📧 Google Email: ${googleUser.email}");
+        log("Google Email: ${googleUser.email}");
         
         // Gọi UserAPI để đồng bộ với MongoDB
         var user = await UserAPI.loginOrRegisterSocial(
@@ -27,7 +27,7 @@ class SocialAuthService {
       }
       return null; // Người dùng hủy đăng nhập
     } catch (e) {
-      log("❌ Lỗi Google Service: $e");
+      log("Lỗi Google Service: $e");
       return null;
     }
   }
@@ -40,7 +40,7 @@ class SocialAuthService {
       if (result.status == LoginStatus.success) {
         // Lấy thông tin user từ Facebook
         final userData = await FacebookAuth.instance.getUserData();
-        log("📘 FB Email: ${userData['email']}");
+        log("FB Email: ${userData['email']}");
 
         // Gọi UserAPI để đồng bộ với MongoDB
         var user = await UserAPI.loginOrRegisterSocial(
@@ -50,11 +50,11 @@ class SocialAuthService {
 
         return user; // Trả về thông tin user từ DB
       } else {
-        log("⚠️ FB Login Cancelled/Failed: ${result.status}");
+        log("FB Login Cancelled/Failed: ${result.status}");
         return null;
       }
     } catch (e) {
-      log("❌ Lỗi Facebook Service: $e");
+      log("Lỗi Facebook Service: $e");
       return null;
     }
   }
@@ -66,15 +66,15 @@ class SocialAuthService {
       // Lần sau đăng nhập nó sẽ bắt buộc hiện lại bảng chọn tài khoản.
       if (await googleSignIn.isSignedIn()) {
         await googleSignIn.disconnect(); 
-        print("🚪 Đã đăng xuất Google");
+        print("Đã đăng xuất Google");
       }
 
       // 2. Đăng xuất Facebook
       await FacebookAuth.instance.logOut();
-      print("🚪 Đã đăng xuất Facebook");
+      print("Đã đăng xuất Facebook");
 
     } catch (e) {
-      print("❌ Lỗi khi đăng xuất Social: $e");
+      print("Lỗi khi đăng xuất Social: $e");
       // Dù lỗi mạng thì cũng kệ, vì Token ở máy (JWT) đã bị xóa rồi.
     }
   }

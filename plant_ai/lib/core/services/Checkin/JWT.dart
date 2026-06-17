@@ -11,7 +11,7 @@ class JWTService {
     await prefs.setString(_tokenKey, token);
     await prefs.setString(_emailKey, email);
     await prefs.setString(_idKey, id);
-    print("🔑 JWTService: Đã lưu phiên đăng nhập cho $email (ID: $id)");
+    print("JWTService: Đã lưu phiên đăng nhập cho $email (ID: $id)");
   }
 
   // 2. KIỂM TRA ĐĂNG NHẬP (Dành cho Auto Login ở Màn hình Login)

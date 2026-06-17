@@ -9,13 +9,13 @@ class TaskAPI {
     return MongoDatabase.db!.collection("garden_tasks");
   }
 
-  // 🚀 Lấy task theo UserId và Ngày cụ thể
+  // Lấy task theo UserId và Ngày cụ thể
   static Future<List<TaskModel>> fetchDailyTasks(String userId, DateTime date, {String? gardenId}) async {
   try {
     final collection = await _getCollection();
     String dateKey = DateFormat('yyyy-MM-dd').format(date);
     
-    // 🚀 LOGIC MỚI: 
+    // LOGIC MỚI: 
     // Nếu gardenId null -> Tìm chính xác những task có ID "24 số 0" (Việc chung)
     // Nếu gardenId có giá trị -> Tìm chính xác task của vườn đó
     String targetGardenId = gardenId ?? "000000000000000000000000";
@@ -28,12 +28,12 @@ class TaskAPI {
     final results = await collection.find(query).toList();
     return results.map((e) => TaskModel.fromMap(e)).toList();
   } catch (e) {
-    print("❌ TaskAPI Error: $e");
+    print("TaskAPI Error: $e");
     return [];
   }
 }
 
-  // 🚀 Lưu task mới
+  // Lưu task mới
   static Future<void> addTask(TaskModel task) async {
     final collection = await _getCollection();
     await collection.insertOne(task.toMap());
@@ -45,7 +45,7 @@ class TaskAPI {
       // Chuyển String ID sang ObjectId của Mongo
       await collection.remove(where.id(ObjectId.fromHexString(id)));
     } catch (e) {
-      print("❌ Lỗi xóa Task: $e");
+      print("Lỗi xóa Task: $e");
     }
   }
 

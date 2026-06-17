@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:convert'; // Để dùng được jsonDecode
+import 'package:http/http.dart' as http; // Để dùng được http.get
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +9,7 @@ import 'AI/ChatBotAIScreen.dart'; // Sửa lại đường dẫn nếu cần
 import 'Effect/CustomBottomNavBar.dart'; // File BottomBar rời của ông
 import 'Effect/PlantSearchOverlay.dart'; // File tìm kiếm Overlay
 import '../../../core/API/UserAPI.dart'; 
+import '../../../core/API/HandbookAPI.dart'; 
 import 'PlantProfile/CoffeeRustScreen.dart';
 import 'PlantProfile/CoffeeMinerScreen.dart';
 import 'PlantProfile/CoffeePhomaScreen.dart';
@@ -49,6 +52,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   String currentUserEmail = ""; 
   int _selectedIndex = 0;
   String _currentKeyword = "";
+  // --- HANDBOOK DATA ---
+  List<dynamic> _handbooks = [];
+  bool _isLoadingHandbooks = true;
 
 
   // --- FILTER DATA (MỚI) ---
@@ -99,6 +105,7 @@ final List<Map<String, String>> _allDiseases = [
   void initState() {
     super.initState();
     _loadUserAndFetch();
+    _fetchHandbooksData();
 
     // 2. CẤU HÌNH ANIMATION (TỔNG THỜI GIAN: 2 GIÂY)
     _controller = AnimationController(
@@ -145,7 +152,30 @@ final List<Map<String, String>> _allDiseases = [
     _controller.dispose(); // Hủy controller khi thoát màn hình
     super.dispose();
   }
-  
+
+
+  Future<void> _fetchHandbooksData() async {
+    try {
+      // 🚀 Giả định ông gọi hàm từ UserAPI (Hoặc dùng thư viện http gọi thẳng API /handbook/list)
+      // var response = await http.get(Uri.parse('http://10.0.2.2:3000/api/handbook/list'), headers: {...});
+      var data = await HandbookAPI.getAllHandbooks(); // Đảm bảo ông có hàm này bên UserAPI.dart
+      
+      if (mounted) {
+        setState(() {
+          _handbooks = data ?? [];
+          _isLoadingHandbooks = false;
+        });
+      }
+    } catch (e) {
+      debugPrint("Lỗi tải cẩm nang: $e");
+      if (mounted) {
+        setState(() {
+          _isLoadingHandbooks = false;
+        });
+      }
+    }
+  }
+
   Future<void> _loadUserAndFetch() async {
     final prefs = await SharedPreferences.getInstance();
     String? email = prefs.getString('current_user_email');
@@ -673,7 +703,7 @@ final List<Map<String, String>> _allDiseases = [
                 crossAxisCount: 2,       // Hiển thị 2 cột
                 crossAxisSpacing: 15,    // Khoảng cách giữa 2 cột
                 mainAxisSpacing: 15,     // Khoảng cách giữa các hàng trên/dưới
-                childAspectRatio: 0.85,  // Chỉnh tỷ lệ khung hình thẻ (nếu thẻ bị lẹm chữ thì giảm số này xuống 0.8 hoặc 0.75)
+                childAspectRatio: 0.75,  // Chỉnh tỷ lệ khung hình thẻ (nếu thẻ bị lẹm chữ thì giảm số này xuống 0.8 hoặc 0.75)
               ),
               itemBuilder: (context, index) {
                 final item = filteredList[index];
@@ -720,28 +750,8 @@ final List<Map<String, String>> _allDiseases = [
     );
   }
   // --- WIDGET CẨM NANG CHĂM SÓC ---
+  // --- WIDGET CẨM NANG CHĂM SÓC (API TÍCH HỢP) ---
   Widget _buildHandbookSection() {
-    final List<Map<String, String>> guides = [
-      {
-        "title": "Bí quyết phòng bệnh mùa mưa",
-        "subtitle": "Bảo vệ cây trồng khỏi nấm",
-        "tag": "Mẹo hay",
-        "image": "assets/Hanbook/LeafRain.jpg",
-      },
-      {
-        "title": "Kỹ thuật bón phân hữu cơ",
-        "subtitle": "Tối ưu hóa năng suất",
-        "tag": "Kỹ thuật",
-        "image": "assets/Hanbook/Chamsoc.jpg",
-      },
-      {
-        "title": "Nhận biết sớm sâu bệnh",
-        "subtitle": "Dấu hiệu trên mặt lá",
-        "tag": "Kiến thức",
-        "image": "assets/Hanbook/Chamsoccaysau.jpg",
-      }
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -758,97 +768,111 @@ final List<Map<String, String>> _allDiseases = [
         
         const SizedBox(height: 15),
 
-        // 🚀 ĐÃ TĂNG CHIỀU CAO TỪ 110 LÊN 125 ĐỂ KHÔNG BỊ TRÀN CHỮ
-        SizedBox(
-          height: 125, 
-          child: ListView.separated(
+        // Hiển thị trạng thái đang tải hoặc danh sách rỗng
+        if (_isLoadingHandbooks)
+          const Center(child: CircularProgressIndicator(color: Color(0xFF80A252)))
+        else if (_handbooks.isEmpty)
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            scrollDirection: Axis.horizontal,
-            itemCount: guides.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 15),
-            itemBuilder: (context, index) {
-              final guide = guides[index];
-              return GestureDetector(
-                onTap: () {
-                  // 🚀 2. VIẾT LOGIC CHUYỂN TRANG Ở ĐÂY
-                  if (guide['title'] == "Bí quyết phòng bệnh mùa mưa") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ArticleDetailScreen()),
-                    );
-                  }
-                  if (guide['title'] == "Kỹ thuật bón phân hữu cơ") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Diseasecontroldetailscreen()),
-                    );
-                  } 
-                  if (guide['title'] == "Nhận biết sớm sâu bệnh") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const PestControlDetailScreen()),
-                    );
-                  } 
-                },
-              child: Container(
-                width: 280,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    // Ảnh bìa
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16)),
-                      child: Image.asset(
-                        guide['image']!,
-                        width: 100,
-                        height: 125, // 🚀 Ảnh cũng phải cao theo khung (125)
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 100, height: 125, color: Colors.grey[200],
-                          child: const Icon(Icons.article, color: Colors.grey),
+            child: Text("Hiện chưa có bài cẩm nang nào.", style: GoogleFonts.roboto(color: Colors.grey)),
+          )
+        else
+          SizedBox(
+            height: 125, 
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              scrollDirection: Axis.horizontal,
+              itemCount: _handbooks.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 15),
+              itemBuilder: (context, index) {
+                final guide = _handbooks[index];
+                
+                // Lọc dữ liệu an toàn từ API
+                final title = guide['title'] ?? 'Chưa có tiêu đề';
+                final subtitle = guide['summary'] ?? '';
+                final tag = guide['category'] ?? 'Mẹo hay';
+                final imageUrl = guide['image'] ?? '';
+                
+                return GestureDetector(
+                  onTap: () {
+                      // 1. Lấy ID an toàn từ cục data (đề phòng MongoDB trả về _id hoặc id)
+                      final handbookId = guide['_id'] ?? guide['id'] ?? '';
+
+                      // 2. CHỈ TRUYỀN ĐÚNG CÁI ID SANG THEO LUỒNG RESTFUL API MỚI
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticleDetailScreen(
+                            id: handbookId, 
+                          ),
                         ),
-                      ),
+                      );
+                    },
+                  child: Container(
+                    width: 280,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                      ],
                     ),
-                    
-                    Expanded(
-                      child: Padding(
-                        // 🚀 GIẢM PADDING DỌC (VERTICAL) ĐỂ CHỮ CÓ THÊM CHỖ THỞ
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(color: colorGreenLight.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
-                              child: Text(guide['tag']!, 
-                                style: GoogleFonts.roboto(fontSize: 10, color: colorGreenDark, fontWeight: FontWeight.bold)),
+                    child: Row(
+                      children: [
+                        // Xử lý ảnh từ API (Ưu tiên Network Image)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), bottomLeft: Radius.circular(16)),
+                          child: imageUrl.startsWith('http') 
+                            ? Image.network(
+                                imageUrl,
+                                width: 100,
+                                height: 125,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  width: 100, height: 125, color: Colors.grey[200],
+                                  child: const Icon(Icons.article, color: Colors.grey),
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/Hanbook/LeafRain.jpg', // Fallback nếu DB không có link ảnh
+                                width: 100,
+                                height: 125,
+                                fit: BoxFit.cover,
+                              ),
+                        ),
+                        
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), 
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(color: colorGreenLight.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+                                  child: Text(tag, 
+                                    style: GoogleFonts.roboto(fontSize: 10, color: colorGreenDark, fontWeight: FontWeight.bold)),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(title, 
+                                  style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87), 
+                                  maxLines: 2, overflow: TextOverflow.ellipsis),
+                                const SizedBox(height: 4),
+                                Text(subtitle, 
+                                  style: GoogleFonts.roboto(fontSize: 12, color: Colors.grey[600]), 
+                                  maxLines: 1, overflow: TextOverflow.ellipsis),
+                              ],
                             ),
-                            const SizedBox(height: 6), // Đã thu hẹp khoảng cách
-                            Text(guide['title']!, 
-                              style: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87), 
-                              maxLines: 2, overflow: TextOverflow.ellipsis),
-                            const SizedBox(height: 4),
-                            Text(guide['subtitle']!, 
-                              style: GoogleFonts.roboto(fontSize: 12, color: Colors.grey[600]), 
-                              maxLines: 1, overflow: TextOverflow.ellipsis),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
