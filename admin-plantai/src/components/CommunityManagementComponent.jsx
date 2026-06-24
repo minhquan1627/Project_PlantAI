@@ -7,7 +7,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/CommunityManagement.css";
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "https://project-plantai.onrender.com/api";
 
 const CommunityManagementComponent = () => {
   const [currentView, setCurrentView] = useState('list'); 
