@@ -8,7 +8,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/DiseaseManagement.css";
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "https://project-plantai.onrender.com/api";
 
 const DiseaseManagement = () => {
   // --- STATE QUẢN LÝ VIEW VÀ DỮ LIỆU ---
