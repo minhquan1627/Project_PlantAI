@@ -5,7 +5,7 @@ import { Mail, Lock, User, ShieldCheck, ArrowRight, AlertCircle, CheckCircle2, K
 import '../styles/LoginandRegisterComponent.css'; 
 import logoImg from '../assets/Logo.png';
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "https://project-plantai.onrender.com/api";
 
 const LoginAndRegister = ({ onLoginSuccess }) => {
   const [view, setView] = useState('login'); 
