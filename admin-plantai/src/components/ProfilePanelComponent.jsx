@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { User, Shield, Lock, Trash2, Camera, Check, X, Loader2 } from 'lucide-react';
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "https://project-plantai.onrender.com/api";
 
 const ProfilePanel = ({ onLogout }) => {
   const [isEditing, setIsEditing] = useState(false);
