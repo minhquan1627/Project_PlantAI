@@ -8,7 +8,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/AdminManagement.css";
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "hhttps://project-plantai.onrender.com/api";
 
 
 const AdminManagement = () => {
