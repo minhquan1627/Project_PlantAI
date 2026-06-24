@@ -23,7 +23,7 @@ import HandbookManagement from './HandbookManagementComponent.jsx';
 import CommunityManagement from './CommunityManagementComponent.jsx';
 import logoImg from '../assets/image.png';
 
-const API_URL = "http://127.0.0.1:3000/api";
+const API_URL = "https://project-plantai.onrender.com/api";
 
 const MainComponent = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
